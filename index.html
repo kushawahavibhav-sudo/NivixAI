@@ -1,30 +1,48 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"/>
 <title>NivixAI</title>
-<link rel="icon" type="image/png" href="data:image/png;base64,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">
-<link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
-<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<!-- Icons are served as files now (no more duplicated base64). Save your logo as /icon-192.png (and optionally /icon-64.png). -->
+<link rel="icon" type="image/png" href="/icon-64.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#05060f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NivixAI">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,signInWithPopup,GoogleAuthProvider,GithubAuthProvider,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,setDoc,getDocs,collection}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,doc,setDoc,deleteDoc,getDocs,collection}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// NOTE: the Firebase project id is "nixlai" (the old name). That is an existing project setting, not the app name; leave it as is.
 const app=initializeApp({apiKey:"AIzaSyCnavvxwXRc7ewTNIiFYx_YPdFwxJTBlEc",authDomain:"nixlai.firebaseapp.com",projectId:"nixlai",storageBucket:"nixlai.firebasestorage.app",messagingSenderId:"414717106260",appId:"1:414717106260:web:45d28637e1a86ecdb8f5c1",measurementId:"G-N0JPWW2RCT"});
-const auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider(),ghp=new GithubAuthProvider();
-const W=window;
-W.__signIn=()=>signInWithPopup(auth,gp);W.__signInGithub=()=>signInWithPopup(auth,ghp);
-W.__signOut=()=>signOut(auth);W.__onAuth=cb=>onAuthStateChanged(auth,cb);
-// saves only chats changed since last save
-const seen={};
-W.__saveChats=async(uid,chats)=>{for(const c of chats){const k=c.id+":"+(c.updated||0)+":"+c.messages.length;if(seen[k])continue;
-try{const messages=c.messages.map(m=>m.image&&m.image.startsWith("data:")?{...m,image:null}:m);
-await setDoc(doc(db,"users",uid,"chats",String(c.id)),JSON.parse(JSON.stringify({...c,messages})));seen[k]=1}catch(e){console.error("Save failed",c.id,e)}}};
-W.__loadChats=async uid=>(await getDocs(collection(db,"users",uid,"chats"))).docs.map(d=>d.data()).sort((a,b)=>b.id-a.id);
+const auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider(),ghp=new GithubAuthProvider(),W=window;
+W.__signIn=()=>signInWithPopup(auth,gp);
+W.__signInGithub=()=>signInWithPopup(auth,ghp);
+W.__signOut=()=>signOut(auth);
+W.__onAuth=cb=>onAuthStateChanged(auth,cb);
+// ID token sent to /api/* so the server can verify who is calling (verify it server-side with the Firebase Admin SDK)
+W.__token=async()=>auth.currentUser?auth.currentUser.getIdToken():null;
+
+// ---- chat sync ----
+const seen={},MAX_DOC=800000; // Firestore docs are capped at 1 MB
+const keyOf=(uid,c)=>uid+":"+c.id+":"+(c.updated||0)+":"+c.messages.length;
+const fit=m=>{let r=m;while(r.length>2&&JSON.stringify(r).length>MAX_DOC)r=r.slice(1);return r};
+W.__saveChats=async(uid,chats)=>{
+ for(const c of chats){const k=keyOf(uid,c);if(seen[k])continue;
+  try{
+   const messages=fit(c.messages.filter(m=>!m.err).map(m=>m.image&&String(m.image).startsWith("data:")?{...m,image:null}:m));
+   await setDoc(doc(db,"users",uid,"chats",String(c.id)),JSON.parse(JSON.stringify({...c,messages})));
+   seen[k]=1;
+  }catch(e){console.error("Save failed",c.id,e)}}};
+W.__loadChats=async uid=>{
+ const snap=await getDocs(collection(db,"users",uid,"chats"));
+ const out=snap.docs.map(d=>d.data()).filter(c=>c&&c.id&&Array.isArray(c.messages));
+ out.forEach(c=>{seen[keyOf(uid,c)]=1}); // already in the cloud, don't write them back
+ return out.sort((a,b)=>(b.updated||b.id)-(a.updated||a.id))};
+W.__deleteChat=async(uid,id)=>{await deleteDoc(doc(db,"users",uid,"chats",String(id)))};
 W.dispatchEvent(new Event("firebase-ready"));
 </script>
 <style>
@@ -35,15 +53,15 @@ W.dispatchEvent(new Event("firebase-ready"));
 --cbg:radial-gradient(circle at 82% 8%,rgba(var(--acr),.4) 0,rgba(var(--ac2r),.18) 60px,transparent 140px),linear-gradient(180deg,rgb(var(--tr)),#04050d 75%);
 --e:cubic-bezier(.2,.8,.2,1)}
 [data-theme=light]{--tx:#14162e;--sub:#5b6088;--nt:#2c3060;--tr:238,240,255;--panel:rgba(255,255,255,.7);--card2:rgba(255,255,255,.85);--ibg:rgba(255,255,255,.9);--modal:#fff;--abg:#eef0fb;--cbg:linear-gradient(180deg,#f7f8ff,#e8ebfb)}
-html,body{width:100%;height:100%;overflow:hidden;position:fixed;inset:0}
+html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 body{font-family:Inter,-apple-system,'Segoe UI',sans-serif;background:#04050d;color:var(--tx)}
 #root{height:100dvh}
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
 input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(var(--acr),.35);border-radius:4px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:rgba(var(--acr),.35);border-radius:4px}
 #bgl{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;animation:bgIn 1s ease both}
 #bgl::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(var(--tr),.15),rgba(var(--tr),.45))}
-.app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--abg);position:relative;z-index:1;transition:background .6s}
+.app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--abg);position:relative;z-index:1;transition:background .6s}
 .app.fx{background:transparent}
 /* liquid glass */
 .top,.card,.center,.promo,.quote,.ibox,.modal,.pop{position:relative;border:1px solid var(--line);background:var(--panel);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 26px rgba(255,255,255,.035),0 12px 36px rgba(0,0,0,.28)}
@@ -78,6 +96,7 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 .rc{display:flex;gap:12px;align-items:center;padding:9px 0;width:100%;text-align:left}
 .rc small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.rc .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;font-size:14px}
 .ico{width:34px;height:34px;border-radius:10px;background:rgba(var(--acr),.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--nt)}
+.hrow{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}.hrow .rc{flex:1;min-width:0}.hrow .rc>div{min-width:0}
 .center{min-width:0;min-height:0;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:var(--cbg)}
 .fx .center{background:var(--panel)}
 .scroll{overflow-x:hidden;position:relative;flex:1;min-height:0;overflow-y:auto;padding:22px;display:flex;flex-direction:column}
@@ -90,27 +109,44 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 .mc.on{border:2px solid var(--ac2);box-shadow:0 0 26px rgba(var(--ac2r),.45);background:rgba(var(--ac2r),.18)}
 .mc b{font-size:15px}.mc small{font-size:11px;color:var(--sub)}.mc span{color:var(--ac2)}
 .msgs{width:100%;max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-.msg{display:flex;flex-direction:column;gap:3px;max-width:82%;animation:rise .45s var(--e) both}
+.msg{display:flex;flex-direction:column;gap:3px;max-width:82%;min-width:0;animation:rise .45s var(--e) both}
 .msg.u{align-self:flex-end;align-items:flex-end}.msg.a{align-self:flex-start}
-.bub{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;border:1px solid var(--line)}
+.bub{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;border:1px solid var(--line);max-width:100%}
+.bub.md{white-space:normal}
 .u .bub{background:rgba(var(--acr),.32)}.a .bub{background:var(--card2)}
 .bub img{display:block;max-width:100%;border-radius:12px;margin-bottom:8px}.bub a{font-size:12px;color:var(--nt);display:inline-block;margin-bottom:6px}
-.acts{display:flex;flex-wrap:wrap;gap:2px;opacity:0;transition:.15s}.msg:hover .acts{opacity:1}@media(hover:none){.acts{opacity:1}}
+.fchip{font-size:12px;opacity:.85;margin-bottom:6px;white-space:normal}
+/* markdown */
+.mdc>:last-child{margin-bottom:0}
+.mdc p,.mdc ul,.mdc ol,.mdc blockquote,.mdc table,.mdc h1,.mdc h2,.mdc h3,.mdc h4{margin:0 0 .65em}
+.mdc ul,.mdc ol{padding-left:1.3em}.mdc li{margin:.15em 0}
+.mdc h1,.mdc h2,.mdc h3,.mdc h4{font-size:1.05em;line-height:1.3}
+.mdc a{font-size:inherit;color:var(--ac);text-decoration:underline;margin:0;display:inline;filter:brightness(1.35)}
+.mdc blockquote{border-left:3px solid rgba(var(--acr),.6);padding-left:10px;color:var(--nt)}
+.mdc code{font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:.88em;background:rgba(var(--acr),.18);padding:1px 5px;border-radius:5px}
+.mdc table{border-collapse:collapse;display:block;overflow-x:auto}.mdc th,.mdc td{border:1px solid var(--line);padding:5px 9px;text-align:left}
+.cb{margin:0 0 .65em;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.35)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 4px 12px;font-size:11px;color:var(--sub);background:rgba(var(--acr),.14)}
+.cpb{font-size:11px;color:var(--nt);padding:3px 9px;border-radius:6px}.cpb:hover{background:rgba(255,255,255,.1)}
+.cb pre{margin:0;padding:10px 12px;overflow-x:auto}.cb code{background:none;padding:0;font-size:12.5px;line-height:1.5;white-space:pre;color:#e6e8ff}
+.acts{display:flex;flex-wrap:wrap;gap:2px;opacity:0;transition:.15s}.msg:hover .acts,.msg:focus-within .acts{opacity:1}@media(hover:none){.acts{opacity:1}}
 .acts button{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);padding:4px 8px;border-radius:7px}.acts button:hover{background:rgba(255,255,255,.08);color:var(--tx)}
 @keyframes bn{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
 .td{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ac);margin-right:5px;animation:bn 1.2s infinite}.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
 .inwrap{padding:0 22px 8px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .ibox{width:100%;max-width:800px;border-radius:22px;background:var(--ibg);padding:10px 14px;display:flex;flex-direction:column;gap:6px;border-color:rgba(var(--acr),.45)}
-.ibox.temp{border-color:#ef4444}.ibox input.t{width:100%;border:none;background:none;font-size:15px;padding:8px 4px}.ibox input.t::placeholder{color:var(--sub)}
+.ibox.temp{border-color:#ef4444}
+.ibox .t{width:100%;border:none;background:none;font-size:15px;padding:8px 4px;resize:none;max-height:160px;line-height:1.45;display:block;overflow-y:auto}.ibox .t::placeholder{color:var(--sub)}
 .irow{display:flex;align-items:center;gap:4px}.irow .ib{width:32px;height:32px}
-.send{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(var(--acr),.55);color:#fff;margin-left:6px}
+.send{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(var(--acr),.55);color:#fff;margin-left:6px;flex-shrink:0}
 .send:hover{transform:scale(1.1) rotate(-8deg)}.send:active{transform:scale(.95)}
 .try{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--sub)}
 .chip{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:18px;border:1px solid var(--line);background:var(--card2);color:var(--nt);font-size:12px}.chip:hover{border-color:rgba(var(--acr),.7)}
 .foot{text-align:center;font-size:12px;color:var(--sub);padding:4px 0 10px}
 .pop{position:absolute;bottom:calc(100% + 8px);right:0;min-width:190px;background:var(--modal);border-radius:14px;padding:6px;z-index:20;transform-origin:bottom right;animation:pop .25s var(--e) both}
 .pop button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:9px;font-size:14px}.pop button:hover,.pop button.on{background:rgba(var(--acr),.2)}.pop small{display:block;font-size:11px;color:var(--sub)}
-.file{font-size:12px;padding:4px 10px;border-radius:8px;background:rgba(var(--acr),.25);display:flex;justify-content:space-between;align-items:center}
+.file{font-size:12px;padding:4px 10px;border-radius:8px;background:rgba(var(--acr),.25);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.file span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .25s both}
 .modal{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--modal);border-radius:20px;padding:20px;animation:pop .4s cubic-bezier(.2,1.1,.3,1) both}
 .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:17px;font-weight:700}
@@ -121,12 +157,15 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 .err{font-size:12px;color:#fca5a5;background:rgba(239,68,68,.1);padding:8px;border-radius:8px;margin-bottom:8px}
 .mem{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.4}
 .opts{display:flex;gap:8px}.opt{flex:1;padding:12px 6px;border-radius:10px;border:1px solid var(--line);font-size:13px;font-weight:600;background:var(--card2)}.opt.on{border:2px solid var(--ac);box-shadow:0 0 14px rgba(var(--acr),.45)}
+.opt.red.on{border-color:#ef4444;color:#fca5a5;box-shadow:0 0 14px rgba(239,68,68,.4)}
 .ug{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.us{padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}.us.w2{grid-column:span 2}
 .us b{display:block;font-size:19px}.us small{font-size:10px;color:var(--sub);font-weight:700;letter-spacing:.4px}
 .lnk{font-size:12px;color:var(--sub);margin-top:8px;text-decoration:underline}
 .vm{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:12px}.vm small{display:block;font-size:11px;color:var(--sub)}
 .tg{width:44px;height:26px;border-radius:13px;background:rgba(255,255,255,.16);position:relative;flex-shrink:0;transition:background .3s}
 .tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.2,1.2,.3,1)}.tg.on{background:var(--ac)}.tg.on::after{transform:translateX(18px)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;background:var(--modal);color:var(--tx);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center;animation:toastIn .3s var(--e) both}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .nc{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;pointer-events:none;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(var(--acr),.22),transparent 60%),var(--panel);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:ncFade 1.15s ease both}
 .nc::before{content:"";position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-18deg);animation:ncSweep 1s .1s ease-in-out both}
 .nc-orb{position:relative;width:104px;height:104px;display:flex;align-items:center;justify-content:center;animation:ncPop .7s cubic-bezier(.2,1.2,.3,1) both}
@@ -150,7 +189,7 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 @media(max-width:1100px){.main{grid-template-columns:240px 1fr}.right{display:none}}
 @media(max-width:768px){.main{grid-template-columns:1fr}.menu-btn{display:flex}.tag,.pill{display:none}
 .side{position:fixed;top:0;bottom:0;left:0;width:270px;z-index:90;padding:14px;background:var(--modal);border-right:1px solid var(--line);transform:translateX(-105%);transition:transform .4s var(--e)}.side.open{transform:none}
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;animation:fade .25s}.modes{grid-template-columns:repeat(3,1fr)}.scroll{padding:14px 12px}.inwrap{padding:0 12px 6px}.msg{max-width:92%}.ug{grid-template-columns:repeat(2,1fr)}.us.w2{grid-column:span 1}}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;animation:fade .25s}.modes{grid-template-columns:repeat(3,1fr)}.scroll{padding:14px 12px}.inwrap{padding:0 12px 6px}.msg{max-width:94%}.ug{grid-template-columns:repeat(2,1fr)}.us.w2{grid-column:span 1}}
 #fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:none}
 .promoart{position:absolute;inset:0;z-index:0}.promoart svg{position:absolute;inset:0;width:100%;height:100%}
 [data-theme=hacker]{--tr:0,10,0;--panel:rgba(0,10,0,.6);--line:#0a4a0a;--tx:#00ff41;--sub:#00a82b;--ac:#00ff41;--ac2:#00ff41;--acr:0,255,65;--ac2r:0,255,65;--card2:rgba(0,20,0,.7);--ibg:rgba(0,12,0,.9);--modal:#000;--nt:#00e03a;--cbg:transparent;--abg:transparent}
@@ -160,72 +199,147 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 [data-theme=hacker] .mc.on,[data-theme=hacker] .opt.on,[data-theme=hacker] .nav button.on{background:rgba(0,255,0,.12);border-color:#0f0;box-shadow:none}
 [data-theme=hacker] .u .bub{background:transparent}[data-theme=hacker] .av{color:#000;background:#0f0;border-color:#0f0}
 .promoart *{transition:fill .7s,stop-color .7s}
-.ibox input.t:focus,.ibox input.t:focus-visible{outline:none}
+.ibox .t:focus,.ibox .t:focus-visible{outline:none}
 .ibox:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px rgba(var(--acr),.28),inset 0 1px 0 rgba(255,255,255,.22),0 12px 36px rgba(0,0,0,.28)}
 </style></head>
 <body><div id="root"></div>
 <script>
-const{useState,useEffect,useRef}=React,h=React.createElement,BRAND="NivixAI";
-// App icon embedded directly in the code (used for the new-chat animation)
-const LOGO="data:image/png;base64,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";
-const P={sun:"M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2",download:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",home:"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",lock:"M5 11h14v10H5z M8 11V7a4 4 0 0 1 8 0v4",sliders:"M4 21v-7 M4 10V3 M12 21v-9 M12 8V3 M20 21v-5 M20 12V3 M1 14h6 M9 8h6 M17 16h6",clock:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6v6l4 2",bolt:"M13 2L3 14h9l-1 8 10-12h-9z",bulb:"M9 18h6 M10 22h4 M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z",book:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z",code:"M16 18l6-6-6-6 M8 6l-6 6 6 6",pen:"M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z",search:"M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3",image:"M3 3h18v18H3z M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M21 15l-5-5L5 21",send:"M22 2L11 13 M22 2l-7 20-4-9-9-4z",plus:"M12 5v14 M5 12h14",clip:"M21.4 11l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5",mic:"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4",menu:"M3 6h18 M3 12h18 M3 18h18",x:"M18 6L6 18 M6 6l12 12",copy:"M9 9h13v13H9z M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",refresh:"M23 4v6h-6 M20.5 15a9 9 0 1 1-2.1-9.4L23 10",chat:"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",brain:"M12 2v20 M9.5 2A3.5 3.5 0 0 0 6 5.5 3.5 3.5 0 0 0 3 9c0 1.3.6 2.3 1.5 3A3.5 3.5 0 0 0 6 18.5 3.5 3.5 0 0 0 9.5 22 M14.5 2A3.5 3.5 0 0 1 18 5.5 3.5 3.5 0 0 1 21 9c0 1.3-.6 2.3-1.5 3a3.5 3.5 0 0 1-1.5 6.5 3.5 3.5 0 0 1-3.5 3.5",tool:"M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z",speak:"M11 5L6 9H2v6h4l5 4z M15.5 8.5a5 5 0 0 1 0 7 M19 5a9 9 0 0 1 0 14",help:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01"};
-const Ic=(n,s=18)=>h("svg",{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:P[n]}));
+const{useState,useEffect,useRef,useMemo}=React,h=React.createElement;
+const BRAND="NivixAI";
+const LOGO="/icon-192.png";      // new-chat animation logo (served as a file)
+const STREAM=false;              // set true once /api/chat pipes Groq's SSE stream through (see notes)
+const MAXTOK=2048,FILE_MAX=20000; // reply token cap, max characters read from an attached file
+const DEFAULT_SYS="You are NivixAI, a helpful, precise engineering assistant.";
+
+/* ---------- storage (new nivixai_ keys, falls back to the old nixlai_ keys once) ---------- */
+const ls=(k,d)=>{try{return localStorage.getItem("nivixai_"+k)||localStorage.getItem("nixlai_"+k)||d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem("nivixai_"+k,v);return true}catch(e){return false}};
+const lj=(k,d)=>{try{const v=JSON.parse(ls(k,""));return v==null?d:v}catch(e){return d}};
+
+const rid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const errMsg=d=>typeof(d&&d.error)==="string"?d.error:(d&&d.error&&d.error.message)||(d&&d.message)||"";
+
+/* ---------- icons ---------- */
+const P={sun:"M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2",download:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",home:"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",lock:"M5 11h14v10H5z M8 11V7a4 4 0 0 1 8 0v4",sliders:"M4 21v-7 M4 10V3 M12 21v-9 M12 8V3 M20 21v-5 M20 12V3 M1 14h6 M9 8h6 M17 16h6",clock:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6v6l4 2",bolt:"M13 2L3 14h9l-1 8 10-12h-9z",bulb:"M9 18h6 M10 22h4 M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z",book:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z",code:"M16 18l6-6-6-6 M8 6l-6 6 6 6",pen:"M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z",search:"M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3",image:"M3 3h18v18H3z M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M21 15l-5-5L5 21",send:"M22 2L11 13 M22 2l-7 20-4-9-9-4z",plus:"M12 5v14 M5 12h14",clip:"M21.4 11l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5",mic:"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4",menu:"M3 6h18 M3 12h18 M3 18h18",x:"M18 6L6 18 M6 6l12 12",copy:"M9 9h13v13H9z M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",refresh:"M23 4v6h-6 M20.5 15a9 9 0 1 1-2.1-9.4L23 10",chat:"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",brain:"M12 2v20 M9.5 2A3.5 3.5 0 0 0 6 5.5 3.5 3.5 0 0 0 3 9c0 1.3.6 2.3 1.5 3A3.5 3.5 0 0 0 6 18.5 3.5 3.5 0 0 0 9.5 22 M14.5 2A3.5 3.5 0 0 1 18 5.5 3.5 3.5 0 0 1 21 9c0 1.3-.6 2.3-1.5 3a3.5 3.5 0 0 1-1.5 6.5 3.5 3.5 0 0 1-3.5 3.5",tool:"M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z",speak:"M11 5L6 9H2v6h4l5 4z M15.5 8.5a5 5 0 0 1 0 7 M19 5a9 9 0 0 1 0 14",help:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01",trash:"M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v6 M14 11v6",stop:"M6 6h12v12H6z"};
+const Ic=(n,s=18)=>h("svg",{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"},h("path",{d:P[n]}));
+
 const PROMO_SVG=`<svg viewBox="0 0 240 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--s1,#140f45)"/><stop offset=".45" style="stop-color:var(--s2,#5b3a9e)"/><stop offset=".72" style="stop-color:var(--s3,#e0768f)"/><stop offset="1" style="stop-color:var(--s4,#ffb26b)"/></linearGradient><radialGradient id="pSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff2c9"/><stop offset=".45" stop-color="#ffc77a" stop-opacity=".85"/><stop offset="1" stop-color="#ff9a6b" stop-opacity="0"/></radialGradient><linearGradient id="pRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--m5,#2b2260)"/><stop offset="1" style="stop-color:var(--m6,#150f38)"/></linearGradient><radialGradient id="pLamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><rect width="240" height="400" fill="url(#pSky)"/><g fill="#fff"><circle cx="30" cy="30" r="1"/><circle cx="70" cy="14" r="1.2"/><circle cx="120" cy="38" r=".9"/><circle cx="170" cy="18" r="1.1"/><circle cx="210" cy="44" r="1"/><circle cx="200" cy="90" r=".8"/><circle cx="50" cy="80" r=".8"/><circle cx="140" cy="70" r=".7"/></g><circle cx="165" cy="268" r="62" fill="url(#pSun)"/><circle cx="165" cy="270" r="22" style="fill:var(--sun,#ffe2a8)"/><polygon points="0,300 0,262 38,236 70,264 112,222 150,270 190,246 240,282 240,300" style="fill:var(--m1,#4a3290)"/><polygon points="0,320 0,286 30,270 66,292 104,262 146,294 188,274 240,300 240,320" style="fill:var(--m2,#2e2070)"/><g style="fill:var(--m3,#1a1245)"><polygon points="8,318 14,288 20,318"/><polygon points="18,320 25,280 32,320"/><polygon points="30,318 36,292 42,318"/><polygon points="206,320 212,290 218,320"/><polygon points="218,320 225,284 232,320"/></g><rect y="316" width="240" height="40" style="fill:var(--m4,#1d1448)"/><polygon points="0,350 240,350 240,400 0,400" fill="url(#pRoad)"/><line x1="0" y1="384" x2="240" y2="384" stroke="#e5d6ff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="12 9"/><ellipse cx="172" cy="368" rx="52" ry="5" fill="#000" opacity=".35"/><ellipse cx="84" cy="364" rx="16" ry="3" fill="#000" opacity=".35"/><path d="M126 360 L126 348 Q126 343 132 342 L150 339 L160 326 Q163 323 168 323 L194 323 Q199 323 202 327 L210 339 L216 342 Q221 343 221 348 L221 360 Z" fill="#0d0a2a"/><polygon points="163,338 170,328 186,328 186,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><polygon points="190,338 190,328 197,328 205,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><circle cx="146" cy="361" r="8.5" fill="#05040f"/><circle cx="146" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="201" cy="361" r="8.5" fill="#05040f"/><circle cx="201" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="128" cy="349" r="10" fill="url(#pLamp)"/><circle cx="128" cy="349" r="2.4" fill="#ffe9b8"/><g stroke="#0a0820" stroke-linecap="round" stroke-linejoin="round" fill="none"><line x1="82" y1="342" x2="75" y2="363" stroke-width="4.6"/><line x1="82" y1="342" x2="92" y2="362" stroke-width="4.6"/><line x1="82" y1="324" x2="82" y2="343" stroke-width="9.5"/><line x1="82" y1="327" x2="75" y2="339" stroke-width="3.6"/><polyline points="83,327 92,335 98,331" stroke-width="3.6"/></g><circle cx="82" cy="316" r="5.8" fill="#0a0820"/><path d="M95 324 L102.5 324 L101.4 333 L96.1 333 Z" fill="#f6ead2"/><rect x="94.6" y="323" width="8.3" height="1.8" rx=".9" fill="#d9c7a4"/><path d="M97 320 q-2.2 -3 0 -5.5 M100.5 320 q-2.2 -3 0 -5.5" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`;
+
+/* ---------- background fx (matrix / rain) ---------- */
 function useFx(kind,ref){useEffect(()=>{const cv=ref.current;if(!cv)return;cv.style.display=kind?"block":"none";if(!kind)return;const x=cv.getContext("2d");let id,drops;const fs=15,chars="アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=<>[]{}";
-const size=()=>{cv.width=innerWidth;cv.height=innerHeight;if(kind==="matrix"){drops=Array.from({length:Math.max(1,Math.floor(cv.width/fs))},()=>Math.random()*-50);x.fillStyle="#000";x.fillRect(0,0,cv.width,cv.height)}else drops=Array.from({length:Math.floor(cv.width*cv.height/9000)},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,l:10+Math.random()*20,s:4+Math.random()*6,o:.15+Math.random()*.35}))};
-const draw=()=>{if(kind==="matrix"){x.fillStyle="rgba(0,0,0,.08)";x.fillRect(0,0,cv.width,cv.height);x.font=fs+"px 'Courier New',monospace";drops.forEach((d,i)=>{const c=chars[Math.floor(Math.random()*chars.length)],py=d*fs;x.fillStyle="#c8ffc8";x.fillText(c,i*fs,py);x.fillStyle="rgba(0,255,70,.75)";x.fillText(c,i*fs,py-fs);if(py>cv.height&&Math.random()>.975)drops[i]=0;drops[i]++})}
-else{x.clearRect(0,0,cv.width,cv.height);x.fillStyle="rgba(15,23,42,.35)";x.fillRect(0,0,cv.width,cv.height);x.strokeStyle="rgba(174,214,241,.55)";drops.forEach(d=>{x.globalAlpha=d.o;x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-2,d.y+d.l);x.stroke();d.y+=d.s;d.x-=.6;if(d.y>cv.height){d.y=-d.l;d.x=Math.random()*cv.width}});x.globalAlpha=1}id=requestAnimationFrame(draw)};
-size();addEventListener("resize",size);draw();return()=>{cancelAnimationFrame(id);removeEventListener("resize",size)}},[kind])}
+ const size=()=>{cv.width=innerWidth;cv.height=innerHeight;if(kind==="matrix"){drops=Array.from({length:Math.max(1,Math.floor(cv.width/fs))},()=>Math.random()*-50);x.fillStyle="#000";x.fillRect(0,0,cv.width,cv.height)}else drops=Array.from({length:Math.floor(cv.width*cv.height/9000)},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,l:10+Math.random()*20,s:4+Math.random()*6,o:.15+Math.random()*.35}))};
+ const draw=()=>{if(kind==="matrix"){x.fillStyle="rgba(0,0,0,.08)";x.fillRect(0,0,cv.width,cv.height);x.font=fs+"px 'Courier New',monospace";drops.forEach((d,i)=>{const c=chars[Math.floor(Math.random()*chars.length)],py=d*fs;x.fillStyle="#c8ffc8";x.fillText(c,i*fs,py);x.fillStyle="rgba(0,255,70,.75)";x.fillText(c,i*fs,py-fs);if(py>cv.height&&Math.random()>.975)drops[i]=0;drops[i]++})}
+  else{x.clearRect(0,0,cv.width,cv.height);x.fillStyle="rgba(15,23,42,.35)";x.fillRect(0,0,cv.width,cv.height);x.strokeStyle="rgba(174,214,241,.55)";drops.forEach(d=>{x.globalAlpha=d.o;x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-2,d.y+d.l);x.stroke();d.y+=d.s;d.x-=.6;if(d.y>cv.height){d.y=-d.l;d.x=Math.random()*cv.width}});x.globalAlpha=1}id=requestAnimationFrame(draw)};
+ size();addEventListener("resize",size);draw();return()=>{cancelAnimationFrame(id);removeEventListener("resize",size)}},[kind])}
+
+/* ---------- constants ---------- */
 const MODES=[{id:"⚡ Nix",label:"Nix",desc:"Fast & helpful",icon:"bolt"},{id:"🧠 Deep",label:"Think",desc:"Deep analysis",icon:"brain"},{id:"📚 Study",label:"Study",desc:"Step-by-step",icon:"book"},{id:"💻 Dev",label:"Dev",desc:"Code & build",icon:"code"},{id:"📷 Image",label:"Image",desc:"Image generation",icon:"image"}];
 const DIRECTIVES={"🧠 Deep":"\n\n[SYSTEM DIRECTIVE: Deep Mode Active. Think through the problem step-by-step and give a detailed, comprehensive analysis.]","📚 Study":"\n\n[SYSTEM DIRECTIVE: Study Mode Active. Act as a patient tutor and explain step-by-step.]","💻 Dev":"\n\n[SYSTEM DIRECTIVE: Dev Mode Active. You are an expert developer. Give clean, working, efficient code.]"};
-// Check Groq's current model list; "mixtral-8x7b-3072" was not a valid ID.
+// Keep in sync with the model whitelist on your server and with Groq's current model list.
 const MODELS=[["llama-3.3-70b-versatile","Llama 3.3 70B"],["llama-3.1-8b-instant","Llama 3.1 8B"],["openai/gpt-oss-20b","GPT-OSS 20B"]];
 const RATE={"llama-3.3-70b-versatile":.69,"llama-3.1-8b-instant":.065,"openai/gpt-oss-20b":.15};
 const U0={messages:0,chats:0,tokens:0,spend:0,days:[],models:{}},tok=s=>Math.ceil((s||"").length/4);
+const FILE_ACCEPT=".txt,.md,.json,.csv,.tsv,.log,.js,.jsx,.ts,.tsx,.py,.html,.css,.java,.c,.cpp,.h,.go,.rs,.rb,.php,.sh,.yml,.yaml,.xml,.sql,.toml,.ini,text/*";
+
 const ago=ts=>{const s=Math.max(0,(Date.now()-ts)/1000|0);if(s<60)return"Just now";const m=s/60|0;if(m<60)return m+(m===1?" min ago":" mins ago");const hh=m/60|0;if(hh<24)return hh+(hh===1?" hr ago":" hrs ago");const d=hh/24|0;return d<30?d+(d===1?" day ago":" days ago"):(d/30|0)+" mo ago"};
-const say=(t,end)=>{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(t),v=s.getVoices().find(x=>x.name===window.__voice);if(v)u.voice=v;if(end)u.onend=u.onerror=end;s.speak(u)};
-// colour extraction
+const plain=t=>String(t||"").replace(/```[\s\S]*?```/g," code block. ").replace(/[*_`#>~|]/g,"");
+const say=(t,end)=>{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(plain(t)),v=s.getVoices().find(x=>x.name===window.__voice);if(v)u.voice=v;if(end)u.onend=u.onerror=end;s.speak(u)};
+const copyText=t=>(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject());
+
+/* what the model actually receives for a stored message (attached files are inlined) */
+const toModel=m=>m.sender==="user"?(m.ctx?`[Attached file: ${m.file}]\n\`\`\`\n${m.ctx}\n\`\`\`\n\n`:"")+(m.prompt||m.text):m.text;
+const mkTitle=hist=>{const f=hist.find(x=>x.sender==="user"),t=((f&&(f.text||f.file))||"New chat").split("\n")[0].trim()||"New chat";return t.length>28?t.slice(0,28)+"…":t};
+
+/* ---------- markdown (marked + DOMPurify, with plain-text fallback) ---------- */
+let mdReady=false;
+const initMd=()=>{if(mdReady)return true;if(!window.marked||!window.DOMPurify)return false;
+ marked.use({gfm:true,breaks:true,renderer:{code(code,lang){const l=String(lang||"").split(/\s/)[0].replace(/[^\w+#.-]/g,"");return`<div class="cb"><div class="ch"><span>${esc(l||"code")}</span><button type="button" class="cpb">Copy</button></div><pre><code>${esc(code)}</code></pre></div>`}}});
+ DOMPurify.addHook("afterSanitizeAttributes",n=>{if(n.tagName==="A"){n.setAttribute("target","_blank");n.setAttribute("rel","noopener noreferrer")}});
+ return mdReady=true};
+const md=t=>{try{if(initMd())return DOMPurify.sanitize(marked.parse(t||""),{ADD_ATTR:["target"],FORBID_TAGS:["img","style","form","input"]})}catch(e){}return esc(t||"").replace(/\n/g,"<br>")};
+
+/* ---------- colour extraction ---------- */
 const hsl=(H,S,L)=>{S/=100;L/=100;const k=n=>(n+H/30)%12,a=S*Math.min(L,1-L),f=n=>L-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return[f(0),f(8),f(4)].map(v=>Math.round(v*255))};
 const toHsl=(r,g,b)=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;if(!d)return[0,0,l];const s=d/(1-Math.abs(2*l-1)),H=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;return[(H*60+360)%360,s,l]};
 const palette=src=>new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=c.height=48;const x=c.getContext("2d");x.drawImage(im,0,0,48,48);const d=x.getImageData(0,0,48,48).data,B=Array.from({length:18},()=>({w:0,h:0}));
-for(let i=0;i<d.length;i+=4){const[H,s,l]=toHsl(d[i],d[i+1],d[i+2]);if(s<.22||l<.12||l>.92)continue;const w=s*(1-Math.abs(l-.5)),b=B[(H/20|0)%18];b.w+=w;b.h+=w*H}
-const t=B.map(b=>({w:b.w,h:b.w?b.h/b.w:0})).sort((a,b)=>b.w-a.w);if(t[0].w<1)return res(null);
-const s2=t.find(q=>q.w>t[0].w*.2&&Math.min(Math.abs(q.h-t[0].h),360-Math.abs(q.h-t[0].h))>35);res({h1:t[0].h,h2:s2?s2.h:(t[0].h+40)%360})};im.onerror=()=>res(null);im.src=src});
+ for(let i=0;i<d.length;i+=4){const[H,s,l]=toHsl(d[i],d[i+1],d[i+2]);if(s<.22||l<.12||l>.92)continue;const w=s*(1-Math.abs(l-.5)),b=B[(H/20|0)%18];b.w+=w;b.h+=w*H}
+ const t=B.map(b=>({w:b.w,h:b.w?b.h/b.w:0})).sort((a,b)=>b.w-a.w);if(t[0].w<1)return res(null);
+ const s2=t.find(q=>q.w>t[0].w*.2&&Math.min(Math.abs(q.h-t[0].h),360-Math.abs(q.h-t[0].h))>35);res({h1:t[0].h,h2:s2?s2.h:(t[0].h+40)%360})};im.onerror=()=>res(null);im.src=src});
 
+/* ---------- components ---------- */
 function Msg({m,onRetry,onEdit,onExplain}){
  const[c,setC]=useState(false),[sp,setSp]=useState(false),u=m.sender==="user";
- useEffect(()=>()=>{if(sp)window.speechSynthesis?.cancel()},[sp]);
- const speak=()=>{const s=window.speechSynthesis;if(!s)return alert("Speech unavailable on this browser.");if(sp){s.cancel();setSp(false);return}setSp(true);say(m.text,()=>setSp(false))};
+ const html=useMemo(()=>u?"":md(m.text),[m.text,u]);
+ useEffect(()=>()=>{if(sp)window.speechSynthesis&&window.speechSynthesis.cancel()},[sp]);
+ const speak=()=>{const s=window.speechSynthesis;if(!s)return;if(sp){s.cancel();setSp(false);return}setSp(true);say(m.text,()=>setSp(false))};
+ const onMd=e=>{const b=e.target.closest&&e.target.closest(".cpb");if(!b)return;const code=(b.closest(".cb")?.querySelector("code")?.textContent)||"";copyText(code).then(()=>{b.textContent="Copied";setTimeout(()=>{b.textContent="Copy"},1400)}).catch(()=>{})};
  return h("div",{className:"msg "+(u?"u":"a")},
-  h("div",{className:"bub"},m.image&&h("img",{src:m.image,alt:"Generated"}),m.image&&h("a",{href:m.image,download:"nivixai-image.png"},"⬇ Download"),m.text),
+  h("div",{className:"bub"+(u?"":" md")},
+   m.image&&h("img",{src:m.image,alt:"Generated image"}),m.image&&h("a",{href:m.image,download:"nivixai-image.png"},"⬇ Download"),
+   u?[m.file&&h("div",{className:"fchip",key:"f"},"📎 "+m.file),m.text]
+    :(m.text?h("div",{className:"mdc",dangerouslySetInnerHTML:{__html:html},onClick:onMd}):null)),
   h("div",{className:"acts"},
-   h("button",{onClick:()=>navigator.clipboard.writeText(m.text).then(()=>{setC(true);setTimeout(()=>setC(false),1400)})},Ic("copy",13),c?"Copied":"Copy"),
-   u?h("button",{onClick:()=>{const t=prompt("Edit message",m.text);if(t&&t.trim()&&t.trim()!==m.text)onEdit(m,t.trim())}},Ic("pen",13),"Edit")
+   h("button",{onClick:()=>copyText(m.text||"").then(()=>{setC(true);setTimeout(()=>setC(false),1400)}).catch(()=>{})},Ic("copy",13),c?"Copied":"Copy"),
+   u?h("button",{onClick:()=>onEdit(m)},Ic("pen",13),"Edit")
    :[h("button",{key:1,onClick:speak,style:sp?{color:"var(--ac)"}:null},Ic("speak",13),sp?"Stop":"Speak"),h("button",{key:2,onClick:()=>onExplain(m)},Ic("help",13),"Explain"),h("button",{key:3,onClick:()=>onRetry(m)},Ic("refresh",13),"Regenerate")]));
 }
-const Modal=({title,onClose,children})=>h("div",{className:"ov",onClick:onClose},h("div",{className:"modal",onClick:e=>e.stopPropagation()},h("div",{className:"mh"},title,h("button",{className:"ib",onClick:onClose},Ic("x"))),children));
+
+// Accessible modal: role=dialog, labelled, focus is trapped and restored on close
+function Modal({title,onClose,children,z}){
+ const ref=useRef(null),id=useRef("m"+rid()).current;
+ useEffect(()=>{const el=ref.current,prev=document.activeElement;
+  const f=()=>[...el.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&x.offsetParent!==null);
+  const kd=e=>{if(e.key!=="Tab")return;const l=f();if(!l.length){e.preventDefault();return}const a=l[0],b=l[l.length-1],cur=document.activeElement;
+   if(e.shiftKey&&(cur===a||cur===el)){e.preventDefault();b.focus()}else if(!e.shiftKey&&cur===b){e.preventDefault();a.focus()}};
+  el.addEventListener("keydown",kd);if(!el.contains(document.activeElement))el.focus();
+  return()=>{el.removeEventListener("keydown",kd);prev&&prev.focus&&prev.focus()}},[]);
+ return h("div",{className:"ov",style:z?{zIndex:z}:null,onMouseDown:e=>{if(e.target===e.currentTarget)onClose()}},
+  h("div",{className:"modal",ref,role:"dialog","aria-modal":"true","aria-labelledby":id,tabIndex:-1},
+   h("div",{className:"mh"},h("span",{id},title),h("button",{className:"ib","aria-label":"Close",onClick:onClose},Ic("x"))),children));
+}
+
+// Replaces prompt()/confirm(): d={title,text,input,multi,value,ok,danger,onOk}
+function Dialog({d,onClose}){
+ const[v,setV]=useState(d.value||"");
+ const ok=()=>{if(d.input&&!v.trim())return;onClose();d.onOk&&d.onOk(v.trim())};
+ return h(Modal,{title:d.title,onClose,z:110},
+  d.text&&h("p",{style:{fontSize:14,lineHeight:1.5,color:"var(--nt)",marginBottom:d.input?10:0}},d.text),
+  d.input&&(d.multi?h("textarea",{className:"fld",autoFocus:true,rows:5,style:{resize:"vertical"},value:v,onChange:e=>setV(e.target.value)})
+   :h("input",{className:"fld",autoFocus:true,value:v,placeholder:d.placeholder||"",onChange:e=>setV(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.nativeEvent.isComposing)ok()}})),
+  h("div",{className:"opts",style:{marginTop:14}},h("button",{className:"opt",onClick:onClose},"Cancel"),h("button",{className:"opt on"+(d.danger?" red":""),onClick:ok},d.ok||"OK")));
+}
 
 function App(){
- const ls=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}},sv=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
- const[ready,setReady]=useState(!!window.__signIn),[loggedIn,setLoggedIn]=useState(false),[realName,setRealName]=useState("Guest User"),[nick,setNick]=useState("Chief"),[email,setEmail]=useState(""),[photo,setPhoto]=useState(null),[authErr,setAuthErr]=useState("");
- const[model,setModel]=useState(MODELS[0][0]),[sysPrompt,setSysPrompt]=useState("You are NivixAI, a helpful, precise engineering assistant."),[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false);
+ const[ready,setReady]=useState(!!window.__signIn),[loggedIn,setLoggedIn]=useState(false),[realName,setRealName]=useState("Guest User"),[email,setEmail]=useState(""),[photo,setPhoto]=useState(null),[authErr,setAuthErr]=useState("");
+ // persisted settings
+ const[nick,setNick]=useState(()=>ls("nick","Chief")),[model,setModel]=useState(()=>{const m=ls("model","");return MODELS.some(x=>x[0]===m)?m:MODELS[0][0]}),[sysPrompt,setSysPrompt]=useState(()=>ls("sys",DEFAULT_SYS));
+ const[mems,setMems]=useState(()=>{const a=lj("mems",[]);return Array.isArray(a)?a:[]});
+ const[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false);
  const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
- const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
- const[theme,setTheme]=useState(()=>ls("nixlai_theme","dark")),[customBg,setCustomBg]=useState(()=>ls("nixlai_customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("nixlai_bgMode","none");return m==="custom"&&!ls("nixlai_customBgUrl","")?"none":m});
- const[mems,setMems]=useState([{id:1,text:"User prefers concise explanations"},{id:2,text:"Important preferences: Use clear steps for complex answers"}]);
- const[usage,setUsage]=useState(()=>{try{return{...U0,...JSON.parse(ls("nixlai_usage","{}"))}}catch(e){return U0}});
- const[voices,setVoices]=useState([]),[voiceName,setVoiceName]=useState(()=>ls("nixlai_voice","")),[voiceMode,setVoiceMode]=useState(()=>ls("nixlai_voiceMode","0")==="1");
- const fxRef=useRef(null),uidRef=useRef(null),endRef=useRef(null),fileRef=useRef(null),bgRef=useRef(null),inRef=useRef(null),recRef=useRef(null),popRef=useRef(null),ncT=useRef(null);
+ const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
+ const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
+ const[usage,setUsage]=useState(()=>{try{return{...U0,...JSON.parse(ls("usage","{}"))}}catch(e){return U0}});
+ const[voices,setVoices]=useState([]),[voiceName,setVoiceName]=useState(()=>ls("voice","")),[voiceMode,setVoiceMode]=useState(()=>ls("voiceMode","0")==="1");
+ const fxRef=useRef(null),uidRef=useRef(null),endRef=useRef(null),fileRef=useRef(null),bgRef=useRef(null),inRef=useRef(null),recRef=useRef(null),popRef=useRef(null),ncT=useRef(null),toastT=useRef(null);
+ const sess=useRef(0),abortRef=useRef(null); // sess changes whenever the visible chat changes, so late replies never land in the wrong chat
  const hacker=theme==="hacker",hasBg=bgMode==="custom"&&!!customBg&&!hacker,fxKind=hacker?"matrix":bgMode==="rain"?"rain":null,fx=hasBg||!!fxKind,modelLabel=(MODELS.find(m=>m[0]===model)||[0,model])[1],hr=new Date().getHours(),greet=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
  const chatTime=c=>c.id===activeId?"Just now":ago(c.updated||c.id);
+ const notify=t=>{setToast(t);clearTimeout(toastT.current);toastT.current=setTimeout(()=>setToast(""),3200)};
+ const bump=()=>{sess.current++;setThinking(false)};
+ const ask=d=>setDlg(d);
 
  useFx(fxKind,fxRef);
  useEffect(()=>{const t=setInterval(()=>setTick(x=>x+1),30000);return()=>clearInterval(t)},[]);
- useEffect(()=>{document.documentElement.dataset.theme=theme;sv("nixlai_theme",theme)},[theme]);
- useEffect(()=>{sv("nixlai_bgMode",bgMode)},[bgMode]);
- useEffect(()=>{sv("nixlai_usage",JSON.stringify(usage))},[usage]);
+ useEffect(()=>{document.documentElement.dataset.theme=theme;sv("theme",theme)},[theme]);
+ useEffect(()=>{sv("bgMode",bgMode)},[bgMode]);
+ useEffect(()=>{sv("usage",JSON.stringify(usage))},[usage]);
+ useEffect(()=>{sv("model",model)},[model]);
+ useEffect(()=>{sv("sys",sysPrompt)},[sysPrompt]);
+ useEffect(()=>{sv("mems",JSON.stringify(mems))},[mems]);
  useEffect(()=>{const d=new Date().toDateString();setUsage(u=>u.days.includes(d)?u:{...u,days:[...u.days,d].slice(-365)})},[]);
- useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"})},[msgs,thinking]);
+ useEffect(()=>{endRef.current&&endRef.current.scrollIntoView({behavior:thinking?"auto":"smooth"})},[msgs,thinking]);
+ useEffect(()=>{const el=inRef.current;if(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,160)+"px"}},[input]);
  // accent colours follow wallpaper
  useEffect(()=>{const r=document.documentElement.style,AK=["s1","s2","s3","s4","m1","m2","m3","m4","m5","m6","m7","m8","sun"].map(k=>"--"+k),K=["--ac","--ac2","--acr","--ac2r","--tr",...AK],reset=()=>{K.forEach(k=>r.removeProperty(k));document.querySelector("meta[name=theme-color]")?.setAttribute("content","#05060f")};
   if(!hasBg)return reset();let dead=0;
@@ -235,57 +349,106 @@ function App(){
    document.querySelector("meta[name=theme-color]")?.setAttribute("content",`rgb(${t})`)});return()=>{dead=1}},[customBg,hasBg,theme]);
  useEffect(()=>{const mv=e=>{const t=e.target.closest?.(".card,.mc,.chip");if(!t)return;const r=t.getBoundingClientRect();t.style.setProperty("--mx",e.clientX-r.left+"px");t.style.setProperty("--my",e.clientY-r.top+"px")};document.addEventListener("pointermove",mv,{passive:true});return()=>document.removeEventListener("pointermove",mv)},[]);
  useEffect(()=>{const s=window.speechSynthesis;if(!s)return;const f=()=>setVoices(s.getVoices());f();s.addEventListener("voiceschanged",f);return()=>s.removeEventListener("voiceschanged",f)},[]);
- useEffect(()=>{window.__voice=voiceName;sv("nixlai_voice",voiceName);sv("nixlai_voiceMode",voiceMode?"1":"0")},[voiceName,voiceMode]);
+ useEffect(()=>{window.__voice=voiceName;sv("voice",voiceName);sv("voiceMode",voiceMode?"1":"0")},[voiceName,voiceMode]);
  useEffect(()=>{if(window.__signIn)return setReady(true);const f=()=>setReady(true);addEventListener("firebase-ready",f);return()=>removeEventListener("firebase-ready",f)},[]);
- useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),1500);return()=>clearTimeout(t)},[chats,loggedIn]);
- useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{setActiveId(null);setMsgs([]);
-  if(user){const n=user.displayName||"Google User";setRealName(n);setNick(n.split(" ")[0]);setEmail(user.email||"");setPhoto(user.photoURL);setLoggedIn(true);uidRef.current=user.uid;setChats([]);
-   window.__loadChats(user.uid).then(c=>{if(uidRef.current===user.uid)setChats(c)}).catch(console.error)}
-  else{uidRef.current=null;setRealName("Guest User");setNick("Chief");setEmail("");setPhoto(null);setLoggedIn(false);setChats([])}})},[ready]);
+ // debounced cloud save (only chats that changed are written)
+ useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length||!window.__saveChats)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),1500);return()=>clearTimeout(t)},[chats,loggedIn]);
+ useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{bump();setActiveId(null);setMsgs([]);
+  if(user){const n=user.displayName||"Google User";setRealName(n);if(!ls("nick",""))setNick(n.split(" ")[0]);setEmail(user.email||"");setPhoto(user.photoURL);setLoggedIn(true);uidRef.current=user.uid;setChats([]);
+   window.__loadChats(user.uid).then(c=>{if(uidRef.current===user.uid)setChats(c)}).catch(e=>{console.error(e);notify("Couldn't load your saved chats.")})}
+  else{uidRef.current=null;setRealName("Guest User");setEmail("");setPhoto(null);setLoggedIn(false);setChats([])}})},[ready]);
  useEffect(()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;const r=new SR();r.continuous=false;r.interimResults=false;r.lang="en-US";
   r.onresult=e=>setInput(p=>p?p+" "+e.results[0][0].transcript:e.results[0][0].transcript);r.onend=r.onerror=()=>setRec(false);recRef.current=r},[]);
  useEffect(()=>{const c=e=>{if(modeMenu&&popRef.current&&!popRef.current.contains(e.target))setModeMenu(false)};document.addEventListener("mousedown",c);return()=>document.removeEventListener("mousedown",c)},[modeMenu]);
- useEffect(()=>{const k=e=>e.key==="Escape"&&setModal(null);addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[]);
+ useEffect(()=>{const k=e=>{if(e.key!=="Escape")return;if(dlg)setDlg(null);else setModal(null)};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[dlg]);
 
- const onBgFile=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(!f.type.startsWith("image/"))return alert("Please choose an image file.");
+ /* ----- actions ----- */
+ const onBgFile=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(!f.type.startsWith("image/"))return notify("Please choose an image file.");
   const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let url="";
    for(const[mx,q]of[[1600,.8],[1280,.75],[960,.7],[720,.65]]){const sc=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc)||1;c.height=Math.round(im.height*sc)||1;
-    c.getContext("2d").drawImage(im,0,0,c.width,c.height);url=c.toDataURL("image/jpeg",q);try{localStorage.setItem("nixlai_customBgUrl",url);break}catch(err){}}
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);url=c.toDataURL("image/jpeg",q);if(sv("customBgUrl",url))break}
    setCustomBg(url);setBgMode("custom")};im.src=r.result};r.readAsDataURL(f)};
- const exportChat=()=>{if(!msgs.length)return alert("Open or start a chat first.");const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob(["# "+BRAND+" chat\n\n"+msgs.map(m=>`**${m.sender==="user"?"You":BRAND}:** ${m.image?"[image] ":""}${m.text}`).join("\n\n")+"\n"],{type:"text/plain;charset=utf-8"}));
-  a.download=`nivixai-chat-${new Date().toISOString().slice(0,10)}.md`;a.click()};
+ const onFile=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  if(f.size>1000000)return notify("That file is too large (max 1 MB).");
+  const r=new FileReader();r.onload=()=>{const t=String(r.result||"");if(t.slice(0,2000).indexOf("\u0000")!==-1)return notify("That looks like a binary file. Only text and code files are supported.");
+   const cut=t.length>FILE_MAX;setFile({name:f.name,text:cut?t.slice(0,FILE_MAX)+"\n…[file truncated]":t});if(cut)notify(`Only the first ${FILE_MAX.toLocaleString()} characters will be used.`)};
+  r.onerror=()=>notify("Couldn't read that file.");r.readAsText(f)};
+ const exportChat=()=>{if(!msgs.length)return notify("Open or start a chat first.");const a=document.createElement("a");
+  const url=URL.createObjectURL(new Blob(["# "+BRAND+" chat\n\n"+msgs.filter(m=>!m.err).map(m=>`**${m.sender==="user"?"You":BRAND}:** ${m.image?"[image] ":""}${m.file?"[file: "+m.file+"] ":""}${m.text}`).join("\n\n")+"\n"],{type:"text/plain;charset=utf-8"}));
+  a.href=url;a.download=`nivixai-chat-${new Date().toISOString().slice(0,10)}.md`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};
  const oauth=async name=>{setAuthErr("");
   if(!window[name])await new Promise(r=>{const t=setTimeout(r,6000);addEventListener("firebase-ready",()=>{clearTimeout(t);r()},{once:true})});
   if(!window[name])return setAuthErr("Sign-in couldn't load. Check your connection or any ad blocker blocking gstatic.com, open the site over https, then reload.");
   try{await window[name]();setModal(null)}catch(e){if(["auth/popup-closed-by-user","auth/cancelled-popup-request"].includes(e.code))return;
    setAuthErr(e.code==="auth/account-exists-with-different-credential"?"An account with this email already exists with a different sign-in method.":e.code==="auth/popup-blocked"?"Popup blocked. Allow popups for this site and try again.":e.code==="auth/unauthorized-domain"?"This domain isn't authorized in Firebase (Authentication → Settings → Authorized domains).":e.message||"Sign-in failed.")}};
  const maskEmail=s=>{if(!s||!s.includes("@"))return"Email hidden";const at=s.lastIndexOf("@"),l=s.slice(0,at),d=s.slice(at);return l.length<=2?l[0]+"#"+d:l.length<=4?l[0]+"#".repeat(l.length-1)+d:l.slice(0,2)+"#".repeat(l.length-4)+l.slice(-2)+d};
- const newChat=()=>{setActiveId(null);setMsgs([]);setInput("");setFile(null);setNavOpen(false);setChatKey(k=>k+1);setNcAnim(true);clearTimeout(ncT.current);ncT.current=setTimeout(()=>setNcAnim(false),1150)};
- const openChat=c=>{setActiveId(c.id);setMsgs(c.messages);setTemp(false);setModal(null);setNavOpen(false)};
- const toggleRec=()=>{if(!recRef.current)return alert("Speech unavailable on this browser.");if(rec){recRef.current.stop();setRec(false)}else{recRef.current.start();setRec(true)}};
- const pick=kind=>{if(fileRef.current)fileRef.current.accept=kind==="image"?"image/*":"*/*";fileRef.current?.click()};
- const prefill=t=>{setInput(t);inRef.current?.focus()};
+ const newChat=()=>{bump();setActiveId(null);setMsgs([]);setInput("");setFile(null);setNavOpen(false);setChatKey(k=>k+1);setNcAnim(true);clearTimeout(ncT.current);ncT.current=setTimeout(()=>setNcAnim(false),1150)};
+ const openChat=c=>{bump();setActiveId(c.id);setMsgs(c.messages);setTemp(false);setModal(null);setNavOpen(false)};
+ const delChat=async c=>{if(loggedIn&&uidRef.current){try{await window.__deleteChat(uidRef.current,c.id)}catch(e){console.error(e);return notify("Couldn't delete that chat. Try again.")}}
+  setChats(p=>p.filter(x=>x.id!==c.id));if(c.id===activeId){bump();setActiveId(null);setMsgs([])}};
+ const askDelete=c=>ask({title:"Delete chat?",text:`"${c.title}" will be permanently deleted${loggedIn?" from your account":""}.`,ok:"Delete",danger:true,onOk:()=>delChat(c)});
+ const toggleRec=()=>{if(!recRef.current)return notify("Voice input isn't available in this browser.");if(rec){recRef.current.stop();setRec(false)}else{try{recRef.current.start();setRec(true)}catch(e){}}};
+ const prefill=t=>{setInput(t);inRef.current&&inRef.current.focus()};
  const track=(a,b,m,nc)=>setUsage(u=>{const t=tok(a)+tok(b);return{...u,messages:u.messages+1,chats:u.chats+(nc?1:0),tokens:u.tokens+t,spend:u.spend+t/1e6*(RATE[m]||.3),models:m?{...u.models,[m]:(u.models[m]||0)+1}:u.models}});
+ const stop=()=>{abortRef.current&&abortRef.current.abort()};
 
- const api=async(text,hist)=>{setThinking(true);const img=mode.includes("Image");
-  try{let reply;
-   if(img){const r=await fetch("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})}),d=await r.json();if(!d.image)throw new Error(d.error?.message||"No image returned");reply={text:d.text||"",image:d.image}}
-   else{const memCtx=mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
-    const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")},...hist.slice(0,-1).filter(m=>m.text&&!m.text.startsWith("⚠️")).slice(-20).map(m=>({role:m.sender==="user"?"user":"assistant",content:m.text})),{role:"user",content:text}];
-    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:payload,temperature:.7,max_tokens:1000})}),d=await r.json(),c=d.choices?.[0]?.message?.content;
-    if(!c)throw new Error(d.error?.message||"Invalid response format");reply={text:c}}
-   const upd=[...hist,{id:Date.now()+1,sender:"ai",...reply}];setMsgs(upd);
-   track(text,reply.text,img?null:model,activeId===null&&!temp);if(voiceMode&&reply.text)say(reply.text);
-   if(!temp){if(activeId===null){const id=Date.now();setChats(p=>[{id,title:text.substring(0,28)+"…",updated:Date.now(),messages:upd},...p]);setActiveId(id)}
-    else setChats(p=>{const cur=p.find(c=>c.id===activeId);return cur?[{...cur,messages:upd,updated:Date.now()},...p.filter(c=>c.id!==activeId)]:p})}
-  }catch(e){setMsgs(p=>[...p,{id:Date.now()+1,sender:"ai",text:img?`⚠️ Image generation failed: ${e.message}`:`⚠️ NivixAI is unavailable right now. Please try again: ${e.message}`}])}finally{setThinking(false)}};
- const send=async()=>{if(thinking)return;const txt=input.trim();if(!txt&&!file)return;const t=file?`[File: ${file.name}] ${txt}`:txt,hist=[...msgs,{id:Date.now(),text:t,sender:"user"}];setMsgs(hist);setInput("");setFile(null);await api(t,hist)};
- const retry=async m=>{const i=msgs.findIndex(x=>x.id===m.id),pu=msgs.slice(0,i).reverse().find(x=>x.sender==="user");if(i<1||!pu)return;const tr=msgs.slice(0,i);setMsgs(tr);await api(pu.text,tr)};
- const edit=async(m,t)=>{const i=msgs.findIndex(x=>x.id===m.id);if(i===-1)return;const tr=[...msgs.slice(0,i),{...m,text:t}];setMsgs(tr);await api(t,tr)};
- const explain=async m=>{const hist=[...msgs,{id:Date.now(),text:"Explain this answer in simpler terms.",sender:"user"}];setMsgs(hist);await api("Explain this in simpler terms, step by step:\n\n"+m.text,hist)};
+ // hist = full conversation ending with the user message to answer
+ const api=async(hist)=>{
+  const sid=sess.current,live=()=>sid===sess.current,uid0=uidRef.current,last=hist[hist.length-1],img=mode.includes("Image"),aid=rid();
+  const isNew=!temp&&activeId===null,cid=temp?null:(activeId!==null?activeId:Date.now());
+  if(isNew)setActiveId(cid);
+  const ctl=new AbortController();abortRef.current=ctl;setThinking(true);
+  let acc="";
+  const finish=reply=>{const upd=[...hist,{id:aid,sender:"ai",...reply}];
+   if(live())setMsgs(upd);
+   track(last.text,reply.text,img?null:model,isNew);
+   if(voiceMode&&live()&&reply.text)say(reply.text);
+   if(cid&&uidRef.current===uid0)setChats(p=>{const cur=p.find(c=>c.id===cid);return[{...(cur||{id:cid}),title:(cur&&cur.title)||mkTitle(hist),messages:upd,updated:Date.now()},...p.filter(c=>c.id!==cid)]})};
+  try{
+   let tk=null;try{tk=window.__token?await window.__token():null}catch(e){}
+   const headers={"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})};
+   let reply;
+   if(img){
+    const r=await fetch("/api/image",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({prompt:last.text})}),d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.image)throw new Error(errMsg(d)||"No image returned");
+    reply={text:d.text||"",image:d.image};
+   }else{
+    const memCtx=mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
+    const past=hist.slice(0,-1).filter(m=>!m.err&&m.text&&!m.text.startsWith("⚠️")).slice(-20).map(m=>({role:m.sender==="user"?"user":"assistant",content:toModel(m)}));
+    const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")},...past,{role:"user",content:toModel(last)}];
+    const r=await fetch("/api/chat",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({model,messages:payload,temperature:.7,max_tokens:MAXTOK,...(STREAM?{stream:true}:{})})});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(errMsg(d)||"HTTP "+r.status)}
+    let fin="";
+    if(STREAM&&r.body&&(r.headers.get("content-type")||"").includes("text/event-stream")){
+     const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+     for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split("\n");buf=lines.pop();
+      for(const ln of lines){const s=ln.trim();if(!s.startsWith("data:"))continue;const p=s.slice(5).trim();if(p==="[DONE]")continue;
+       try{const j=JSON.parse(p),ch=j.choices&&j.choices[0];if(ch&&ch.delta&&ch.delta.content){acc+=ch.delta.content;if(live())setMsgs([...hist,{id:aid,sender:"ai",text:acc}])}if(ch&&ch.finish_reason)fin=ch.finish_reason}catch(e){}}}
+     if(!acc)throw new Error("Empty response");
+    }else{
+     const d=await r.json(),c=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
+     if(!c)throw new Error(errMsg(d)||"Invalid response format");acc=c;fin=d.choices[0].finish_reason||"";
+    }
+    if(fin==="length")acc+="\n\n*(The reply hit the length limit. Ask me to continue.)*";
+    reply={text:acc};
+   }
+   finish(reply);
+  }catch(e){
+   if(e&&e.name==="AbortError"){if(acc)finish({text:acc+"\n\n*(Stopped)*"});return}
+   if(live())setMsgs([...hist,{id:aid,sender:"ai",err:true,text:img?`⚠️ Image generation failed: ${e.message}`:`⚠️ NivixAI is unavailable right now. Please try again. (${e.message})`}]);
+  }finally{if(live())setThinking(false)}};
 
- const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0];
+ const clean=()=>msgs.filter(x=>!x.err);
+ const send=async()=>{if(thinking)return;const txt=input.trim();if(!txt&&!file)return;
+  const m={id:rid(),sender:"user",text:txt||"Please read this file and summarize it.",...(file?{file:file.name,ctx:file.text}:{})},hist=[...clean(),m];
+  setMsgs(hist);setInput("");setFile(null);await api(hist)};
+ const busy=()=>{if(thinking){notify("Wait for the current reply, or press Stop.");return true}return false};
+ const retry=async m=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i<1)return;const tr=msgs.slice(0,i).filter(x=>!x.err);if(!tr.length||tr[tr.length-1].sender!=="user")return;setMsgs(tr);await api(tr)};
+ const edit=async(m,t)=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i===-1)return;const tr=[...msgs.slice(0,i).filter(x=>!x.err),{...m,text:t,prompt:undefined}];setMsgs(tr);await api(tr)};
+ const askEdit=m=>ask({title:"Edit message",input:true,multi:true,value:m.text,ok:"Save & resend",onOk:t=>{if(t&&t!==m.text)edit(m,t)}});
+ const explain=async m=>{if(busy())return;const hist=[...clean(),{id:rid(),sender:"user",text:"Explain this answer in simpler terms.",prompt:"Explain this in simpler terms, step by step:\n\n"+m.text}];setMsgs(hist);await api(hist)};
+
+ const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0],waiting=thinking&&msgs.length>0&&msgs[msgs.length-1].sender==="user";
  const cards=[...MODES.slice(0,4).map(m=>({k:m.id,label:m.label,desc:m.desc,icon:m.icon,on:mode===m.id,go:()=>setMode(m.id)})),{k:"w",label:"Write",desc:"Create & express",icon:"pen",go:()=>prefill("Draft an essay or email about ")},{k:"r",label:"Research",desc:"Find & explore",icon:"search",go:()=>prefill("Find detailed information on ")}];
  const tries=[["bulb","Explain this","Explain the concept of "],["clock","Make a plan","Make a plan for "],["pen","Write a note","Write a note about "],["search","Find resources","Find resources on "]];
  const nav=(ic,l,fn,on)=>h("button",{className:on?"on":"",onClick:()=>{fn();setNavOpen(false)}},Ic(ic,20),l);
@@ -294,30 +457,31 @@ function App(){
   h("canvas",{id:"fx",ref:fxRef}),hasBg&&h("div",{id:"bgl",key:customBg.length,style:{backgroundImage:`url(${customBg})`}}),
   h("div",{className:"app"+(fx?" fx":"")},
   h("input",{type:"file",ref:bgRef,style:{display:"none"},accept:"image/*",onChange:onBgFile}),
-  h("input",{type:"file",ref:fileRef,style:{display:"none"},onChange:e=>{const f=e.target.files[0];if(f)setFile({name:f.name});e.target.value=""}}),
-  h("div",{className:"top"},h("button",{className:"ib menu-btn",onClick:()=>setNavOpen(true)},Ic("menu",22)),
+  h("input",{type:"file",ref:fileRef,style:{display:"none"},accept:FILE_ACCEPT,onChange:onFile}),
+  h("div",{className:"top"},h("button",{className:"ib menu-btn","aria-label":"Open menu",onClick:()=>setNavOpen(true)},Ic("menu",22)),
    h("span",{className:"brand"},BRAND),
    h("span",{className:"tag"},"Your AI. Your Rules."),temp&&h("span",{className:"off on"},"◉ Temp"),h("div",{className:"sp"}),
-   h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
-   h("button",{onClick:()=>setModal("acct"),title:"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
+   h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
+   h("button",{onClick:()=>setModal("acct"),title:"Account","aria-label":"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
   h("div",{className:"main"},navOpen&&h("div",{className:"scrim",onClick:()=>setNavOpen(false)}),
-   h("div",{className:"side"+(navOpen?" open":"")},h("div",{className:"nav"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
+   h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
     h("div",{className:"promo"},h("div",{className:"promoart",dangerouslySetInnerHTML:{__html:PROMO_SVG}}),h("span",null,"✦ Better questions.",h("br"),"Bigger possibilities."))),
    h("div",{className:"center"},
-    h("div",{className:"scroll"},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}, ${nick} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
+    h("div",{className:"scroll"},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
       !temp&&h("div",{className:"modes"},cards.map(c=>h("button",{key:c.k,className:"mc"+(c.on?" on":""),onClick:c.go},h("span",null,Ic(c.icon,26)),h("b",null,c.label),h("small",null,c.desc)))))
-     :h("div",{className:"msgs"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:edit,onExplain:explain})),thinking&&h("div",{className:"msg a"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
-    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:""}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
+     :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
+    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:"",onError:e=>{e.target.style.display="none"}}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
     h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
-      file&&h("div",{className:"file"},h("span",null,"⌘ ",h("b",null,file.name)),h("button",{onClick:()=>setFile(null)},"×")),
-      h("input",{className:"t",ref:inRef,value:input,placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>e.key==="Enter"&&!e.shiftKey&&send()}),
-      h("div",{className:"irow"},h("button",{className:"ib",title:"Attach document",onClick:()=>pick("doc")},Ic("plus",20)),h("button",{className:"ib",title:"Attach image",onClick:()=>pick("image")},Ic("clip")),h("div",{className:"sp"}),
-       h("button",{className:"ib",title:"Voice input",style:{color:rec?"#ef4444":undefined},onClick:toggleRec},Ic("mic")),
-       h("div",{style:{position:"relative"},ref:popRef},h("button",{className:"ib",title:"Change mode",onClick:()=>setModeMenu(v=>!v),style:{color:"var(--ac2)"}},Ic("brain",20)),
-        modeMenu&&h("div",{className:"pop"},MODES.map(m=>h("button",{key:m.id,className:mode===m.id?"on":"",onClick:()=>{setMode(m.id);setModeMenu(false)}},m.id,h("small",null,m.desc))))),
-       h("button",{className:"off"+(temp?" on":""),title:"Temporary chat",onClick:()=>{setTemp(v=>!v);newChat()}},"◉ ",temp?"On":"Off"),h("button",{className:"send",onClick:send,title:"Send"},Ic("send",19)))),
+      file&&h("div",{className:"file"},h("span",null,"📎 ",h("b",null,file.name)),h("button",{"aria-label":"Remove attachment",onClick:()=>setFile(null)},"×")),
+      h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
+      h("div",{className:"irow"},h("button",{className:"ib",title:"Attach a text or code file","aria-label":"Attach a text or code file",onClick:()=>fileRef.current&&fileRef.current.click()},Ic("clip")),h("div",{className:"sp"}),
+       h("button",{className:"ib",title:"Voice input","aria-label":"Voice input","aria-pressed":rec,style:{color:rec?"#ef4444":undefined},onClick:toggleRec},Ic("mic")),
+       h("div",{style:{position:"relative"},ref:popRef},h("button",{className:"ib",title:"Change mode","aria-label":"Change mode","aria-haspopup":"menu","aria-expanded":modeMenu,onClick:()=>setModeMenu(v=>!v),style:{color:"var(--ac2)"}},Ic("brain",20)),
+        modeMenu&&h("div",{className:"pop",role:"menu"},MODES.map(m=>h("button",{key:m.id,role:"menuitem",className:mode===m.id?"on":"",onClick:()=>{setMode(m.id);setModeMenu(false)}},m.id,h("small",null,m.desc))))),
+       h("button",{className:"off"+(temp?" on":""),title:"Temporary chat","aria-pressed":temp,onClick:()=>{setTemp(v=>!v);newChat()}},"◉ ",temp?"On":"Off"),
+       thinking?h("button",{className:"send",onClick:stop,title:"Stop","aria-label":"Stop generating"},Ic("stop",19)):h("button",{className:"send",onClick:send,title:"Send","aria-label":"Send message"},Ic("send",19)))),
      empty&&!temp&&h("div",{className:"try"},"Try",tries.map(([ic,l,p])=>h("button",{key:l,className:"chip",onClick:()=>prefill(p)},Ic(ic,13),l)))),
-    h("div",{className:"foot"},`${BRAND} v1.0 • Powered by ${modelLabel}`)),
+    h("div",{className:"foot"},`${BRAND} v1.1 • Powered by ${modelLabel}`)),
    h("div",{className:"right"},
     h("div",{className:"card"},h("div",{className:"h3"},"AI Status"),h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"#7be8b5",marginBottom:6}},h("span",{className:"dot"}),"All systems operational"),
      [["brain","Model",modelLabel],["lock","Memory",mems.length+" saved"],["chat","Chats",loggedIn?"Synced":"Local"],["tool","Tools","Ready"]].map(([ic,k,v])=>h("div",{className:"row",key:k},h("div",{className:"ico"},Ic(ic,17)),h("span",{className:"k"},k),h("span",{className:"v"},v)))),
@@ -326,32 +490,39 @@ function App(){
       :h("div",{style:{color:"var(--sub)",fontSize:13,padding:"14px 0"}},loggedIn?"No chats saved yet.":"Sign in to save your chats.")),
     h("div",{className:"quote"},"✦ “Small steps",h("br"),"build big things.”",h("div",{style:{color:"var(--nt)",fontSize:12,marginTop:6}},"— "+BRAND)))),
 
-  modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>setModal(null)},chats.length?chats.map(c=>h("button",{key:c.id,className:"rc",style:{borderBottom:"1px solid var(--line)"},onClick:()=>openChat(c)},h("div",null,h("div",{className:"t",style:{maxWidth:360}},c.title),h("small",null,chatTime(c))))):h("div",{style:{color:"var(--sub)",fontSize:13,textAlign:"center",padding:16}},loggedIn?"No chats saved yet.":"Sign in to sync and save your chat history.")),
-  modal==="mem"&&h(Modal,{title:"Memory Vault",onClose:()=>setModal(null)},!mems.length&&h("div",{style:{color:"var(--sub)",textAlign:"center",fontSize:13}},"Vault is empty."),
-   mems.map(m=>h("div",{key:m.id,className:"mem"},h("span",null,`“${m.text}”`),h("span",{style:{display:"flex",gap:6,flexShrink:0}},h("button",{onClick:()=>{const t=prompt("Edit memory",m.text);if(t&&t.trim())setMems(p=>p.map(x=>x.id===m.id?{...x,text:t.trim()}:x))}},"✎"),h("button",{style:{color:"#ef4444"},onClick:()=>setMems(p=>p.filter(x=>x.id!==m.id))},"×")))),
-   h("button",{className:"btn",onClick:()=>{const t=prompt("New memory");if(t&&t.trim())setMems(p=>[...p,{id:Date.now(),text:t.trim()}])}},"+ Add memory")),
-  modal==="acct"&&h(Modal,{title:loggedIn?"Account":"Sign in",onClose:()=>setModal(null)},authErr&&h("div",{className:"err"},authErr),
+  modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>setModal(null)},chats.length?chats.map(c=>h("div",{key:c.id,className:"hrow"},
+    h("button",{className:"rc",onClick:()=>openChat(c)},h("div",null,h("div",{className:"t",style:{maxWidth:330}},c.title),h("small",null,chatTime(c)))),
+    h("button",{className:"ib",title:"Delete chat","aria-label":"Delete chat "+c.title,onClick:()=>askDelete(c)},Ic("trash",16))))
+   :h("div",{style:{color:"var(--sub)",fontSize:13,textAlign:"center",padding:16}},loggedIn?"No chats saved yet.":"Sign in to sync and save your chat history.")),
+  modal==="mem"&&h(Modal,{title:"Memory Vault",onClose:()=>setModal(null)},!mems.length&&h("div",{style:{color:"var(--sub)",textAlign:"center",fontSize:13,marginBottom:10}},"Vault is empty. Add things you want NivixAI to remember about you."),
+   mems.map(m=>h("div",{key:m.id,className:"mem"},h("span",null,`“${m.text}”`),h("span",{style:{display:"flex",gap:6,flexShrink:0}},
+    h("button",{"aria-label":"Edit memory",onClick:()=>ask({title:"Edit memory",input:true,value:m.text,ok:"Save",onOk:t=>setMems(p=>p.map(x=>x.id===m.id?{...x,text:t}:x))})},"✎"),
+    h("button",{"aria-label":"Delete memory",style:{color:"#ef4444"},onClick:()=>setMems(p=>p.filter(x=>x.id!==m.id))},"×")))),
+   h("button",{className:"btn",onClick:()=>ask({title:"New memory",input:true,placeholder:"e.g. I prefer short answers",ok:"Add",onOk:t=>setMems(p=>[...p,{id:rid(),text:t}])})},"+ Add memory")),
+  modal==="acct"&&h(Modal,{title:loggedIn?"Account":"Sign in",onClose:()=>setModal(null)},authErr&&h("div",{className:"err",role:"alert"},authErr),
    loggedIn?h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:600}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||"?")[0].toUpperCase()),maskEmail(email)),
-     h("button",{className:"btn red",onClick:()=>{if(confirm("Are you sure you want to disconnect your sync?"))window.__signOut().then(()=>setModal(null))}},"Disconnect Sync"))
+     h("button",{className:"btn red",onClick:()=>ask({title:"Sign out?",text:"Your chats stay saved in your account. New chats won't sync until you sign in again.",ok:"Sign out",danger:true,onOk:()=>window.__signOut().then(()=>setModal(null))})},"Sign out"))
    :h("div",null,h("button",{className:"btn",onClick:()=>oauth("__signIn")},"Sign in with Google"),h("button",{className:"btn",onClick:()=>oauth("__signInGithub")},"Sign in with GitHub"))),
   modal==="app"&&h(Modal,{title:"Appearance",onClose:()=>setModal(null)},h("div",{className:"lab",style:{marginTop:0}},"THEME"),
-   h("div",{className:"opts"},[["dark","Dark"],["light","Light"],["hacker","Hacker"]].map(([k,l])=>h("button",{key:k,className:"opt"+(theme===k?" on":""),onClick:()=>setTheme(k)},l))),
+   h("div",{className:"opts"},[["dark","Dark"],["light","Light"],["hacker","Hacker"]].map(([k,l])=>h("button",{key:k,className:"opt"+(theme===k?" on":""),"aria-pressed":theme===k,onClick:()=>setTheme(k)},l))),
    hacker?h("div",{style:{fontSize:12,color:"var(--sub)",marginTop:14}},"Matrix rain is active. Wallpapers are available in the Dark and Light themes."):h("div",null,
-    h("div",{className:"lab"},"WALLPAPER"),h("div",{className:"opts"},[["none","None"],["custom","Your image"],["rain","Rainfall"]].map(([k,l])=>h("button",{key:k,className:"opt"+(bgMode===k?" on":""),onClick:()=>{if(k==="custom"&&!customBg)bgRef.current?.click();else setBgMode(k)}},l))),
-    bgMode==="custom"&&h("button",{className:"btn",onClick:()=>bgRef.current?.click()},"Change image"),
+    h("div",{className:"lab"},"WALLPAPER"),h("div",{className:"opts"},[["none","None"],["custom","Your image"],["rain","Rainfall"]].map(([k,l])=>h("button",{key:k,className:"opt"+(bgMode===k?" on":""),"aria-pressed":bgMode===k,onClick:()=>{if(k==="custom"&&!customBg)bgRef.current&&bgRef.current.click();else setBgMode(k)}},l))),
+    bgMode==="custom"&&h("button",{className:"btn",onClick:()=>bgRef.current&&bgRef.current.click()},"Change image"),
     h("div",{style:{fontSize:12,color:"var(--sub)",marginTop:12}},"Accent colours and glass tint adapt to your wallpaper automatically."))),
   modal==="set"&&h(Modal,{title:"Control Center",onClose:()=>setModal(null)},
    h("div",{className:"card",style:{padding:12,fontSize:13,lineHeight:1.5}},h("b",null,"About"),h("br"),BRAND+" is an independent project built by an anonymous team."),
-   h("div",{className:"lab"},"NICKNAME"),h("input",{className:"fld",value:nick,onChange:e=>setNick(e.target.value)}),
-   h("div",{className:"lab"},"MODEL"),h("select",{className:"fld",value:model,onChange:e=>setModel(e.target.value)},MODELS.map(([v,l])=>h("option",{key:v,value:v},l))),
-   h("div",{className:"lab"},"SYSTEM PROMPT"),h("textarea",{className:"fld",rows:4,style:{resize:"none"},value:sysPrompt,onChange:e=>setSysPrompt(e.target.value)}),
+   h("div",{className:"lab"},"NICKNAME"),h("input",{className:"fld",value:nick,"aria-label":"Nickname",onChange:e=>{setNick(e.target.value);sv("nick",e.target.value)}}),
+   h("div",{className:"lab"},"MODEL"),h("select",{className:"fld","aria-label":"Model",value:model,onChange:e=>setModel(e.target.value)},MODELS.map(([v,l])=>h("option",{key:v,value:v},l))),
+   h("div",{className:"lab"},"SYSTEM PROMPT"),h("textarea",{className:"fld","aria-label":"System prompt",rows:4,style:{resize:"none"},value:sysPrompt,onChange:e=>setSysPrompt(e.target.value)}),
    h("div",{className:"lab"},"USAGE"),
    h("div",{className:"ug"},[[usage.messages,"MESSAGES"],[usage.chats,"CHATS"],[usage.days.length,"DAYS ACTIVE"],["$"+usage.spend.toFixed(4),"EST. SPEND"]].map(([v,k])=>h("div",{key:k,className:"us"},h("b",null,v),h("small",null,k))),
     h("div",{className:"us w2"},h("b",null,usage.tokens.toLocaleString()),h("small",null,"EST. TOKENS")),h("div",{className:"us w2"},h("b",null,topModel?(MODELS.find(m=>m[0]===topModel[0])||[0,topModel[0]])[1]:"—"),h("small",null,"TOP MODEL"))),
-   h("button",{className:"lnk",onClick:()=>confirm("Reset usage counters?")&&setUsage({...U0,days:[new Date().toDateString()]})},"Reset usage counters"),
+   h("button",{className:"lnk",onClick:()=>ask({title:"Reset usage counters?",text:"Messages, chats, tokens and spend estimates go back to zero.",ok:"Reset",danger:true,onOk:()=>setUsage({...U0,days:[new Date().toDateString()]})})},"Reset usage counters"),
    h("div",{className:"lab"},"VOICE"),
-   h("select",{className:"fld",value:voiceName,onChange:e=>setVoiceName(e.target.value)},h("option",{value:""},"System default"),voices.map(v=>h("option",{key:v.name,value:v.name},`${v.name} (${v.lang})`))),
-   h("div",{className:"vm"},h("div",null,h("b",null,"Voice Mode"),h("small",null,"Auto-speak assistant replies.")),h("button",{className:"tg"+(voiceMode?" on":""),"aria-pressed":voiceMode,"aria-label":"Voice Mode",onClick:()=>setVoiceMode(v=>{if(v)window.speechSynthesis?.cancel();return!v})})))));
+   h("select",{className:"fld","aria-label":"Voice",value:voiceName,onChange:e=>setVoiceName(e.target.value)},h("option",{value:""},"System default"),voices.map(v=>h("option",{key:v.name,value:v.name},`${v.name} (${v.lang})`))),
+   h("div",{className:"vm"},h("div",null,h("b",null,"Voice Mode"),h("small",null,"Auto-speak assistant replies.")),h("button",{className:"tg"+(voiceMode?" on":""),role:"switch","aria-checked":voiceMode,"aria-label":"Voice Mode",onClick:()=>setVoiceMode(v=>{if(v)window.speechSynthesis&&window.speechSynthesis.cancel();return!v})}))),
+  dlg&&h(Dialog,{d:dlg,key:dlg.title+(dlg.value||""),onClose:()=>setDlg(null)}),
+  toast&&h("div",{className:"toast",role:"status"},toast)));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 </script></body></html>
