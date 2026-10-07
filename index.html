@@ -17,7 +17,7 @@ import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-ap
 import{getAuth,signInWithPopup,GoogleAuthProvider,GithubAuthProvider,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,setDoc,deleteDoc,getDocs,collection}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 // NOTE: the Firebase project id is "nixlai" (the old name). That is an existing project setting, not the app name; leave it as is.
-const app=initializeApp({apiKey:"AIzaSyCnavvxwXRc7ewTNIiFYx_YPdFwxJTBlEc",authDomain:"nixlai.firebaseapp.com",projectId:"nixlai",storageBucket:"nixlai.firebasestorage.app",messagingSenderId:"414717106260",appId:"1:414717106260:web:45d28637e1a86ecdb8f5c1",measurementId:"G-N0JPWW2RCT"});
+const app=initializeApp({apiKey:"AIzaSyCu3bDYabkz0edUPt1ycnIav6NrRWIRg3M",authDomain:"nivixai-isgood24.firebaseapp.com",projectId:"nivixai-isgood24",storageBucket:"nivixai-isgood24.firebasestorage.app",messagingSenderId:"893109762101",appId:"1:893109762101:web:4e1a243ce25bb73355997c",measurementId:"G-H5K9NG8R4N"});
 const auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider(),ghp=new GithubAuthProvider(),W=window;
 W.__signIn=()=>signInWithPopup(auth,gp);
 W.__signInGithub=()=>signInWithPopup(auth,ghp);
