@@ -469,8 +469,8 @@ function App(){
   h("input",{type:"file",ref:bgRef,style:{display:"none"},accept:"image/*",onChange:onBgFile}),
   h("input",{type:"file",ref:fileRef,style:{display:"none"},accept:FILE_ACCEPT,onChange:onFile}),
   h("div",{className:"top"},h("button",{className:"ib menu-btn","aria-label":"Open menu",onClick:()=>setNavOpen(true)},Ic("menu",22)),
-   h("span",{className:"logo"},h("img",{src:LOGO,alt:"",width:34,height:34,onError:hideImg})),
-   h("span",{className:"brand"},BRAND),
+   
+  h("span",{className:"brand"},BRAND),
    h("span",{className:"tag"},"Your AI. Your Rules."),temp&&h("span",{className:"off on"},"◉ Temp"),h("div",{className:"sp"}),
    h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
    h("button",{onClick:()=>setModal("acct"),title:"Account","aria-label":"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
