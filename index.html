@@ -3,10 +3,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"/>
 <title>NivixAI</title>
-<!-- Icons are served as files now (no more duplicated base64). Save your logo as /icon-192.png (and optionally /icon-64.png). -->
-<link rel="icon" type="image/png" href="/icon-64.png">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#05060f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NivixAI">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -205,8 +201,7 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 <script>
 const{useState,useEffect,useRef,useMemo}=React,h=React.createElement;
 const BRAND="NivixAI";
-const LOGO="/icon-192.png";      // new-chat animation logo (served as a file)
-const STREAM=false;              // set true once /api/chat pipes Groq's SSE stream through (see notes)
+const STREAM=true;              // /api/chat pipes Groq's SSE stream through
 const MAXTOK=2048,FILE_MAX=20000; // reply token cap, max characters read from an attached file
 const DEFAULT_SYS="You are NivixAI, a helpful, precise engineering assistant.";
 
@@ -241,9 +236,9 @@ function useFx(kind,ref){useEffect(()=>{const cv=ref.current;if(!cv)return;cv.st
 /* ---------- constants ---------- */
 const MODES=[{id:"⚡ Nix",label:"Nix",desc:"Fast & helpful",icon:"bolt"},{id:"🧠 Deep",label:"Think",desc:"Deep analysis",icon:"brain"},{id:"📚 Study",label:"Study",desc:"Step-by-step",icon:"book"},{id:"💻 Dev",label:"Dev",desc:"Code & build",icon:"code"},{id:"📷 Image",label:"Image",desc:"Image generation",icon:"image"}];
 const DIRECTIVES={"🧠 Deep":"\n\n[SYSTEM DIRECTIVE: Deep Mode Active. Think through the problem step-by-step and give a detailed, comprehensive analysis.]","📚 Study":"\n\n[SYSTEM DIRECTIVE: Study Mode Active. Act as a patient tutor and explain step-by-step.]","💻 Dev":"\n\n[SYSTEM DIRECTIVE: Dev Mode Active. You are an expert developer. Give clean, working, efficient code.]"};
-// Keep in sync with the model whitelist on your server and with Groq's current model list.
-const MODELS=[["llama-3.3-70b-versatile","Llama 3.3 70B"],["llama-3.1-8b-instant","Llama 3.1 8B"],["openai/gpt-oss-20b","GPT-OSS 20B"]];
-const RATE={"llama-3.3-70b-versatile":.69,"llama-3.1-8b-instant":.065,"openai/gpt-oss-20b":.15};
+// Keep in sync with the model whitelist on your server.
+const MODELS=[["openai/gpt-oss-20b","GPT-OSS 20B"],["meta-llama/llama-prompt-guard-2-22m","Llama Prompt Guard 2 22M"],["qwen/qwen3.8-27b","Qwen3.8 27B"]];
+const RATE={"openai/gpt-oss-20b":.15,"meta-llama/llama-prompt-guard-2-22m":.05,"qwen/qwen3.8-27b":.25};
 const U0={messages:0,chats:0,tokens:0,spend:0,days:[],models:{}},tok=s=>Math.ceil((s||"").length/4);
 const FILE_ACCEPT=".txt,.md,.json,.csv,.tsv,.log,.js,.jsx,.ts,.tsx,.py,.html,.css,.java,.c,.cpp,.h,.go,.rs,.rb,.php,.sh,.yml,.yaml,.xml,.sql,.toml,.ini,text/*";
 
@@ -414,7 +409,6 @@ function App(){
    const headers={"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})};
    let reply;
    if(img){
-    // read the body as text first so a non-JSON error page (404/500/timeout) still gives a useful message
     const r=await fetch("/api/image",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({prompt:last.text})});
     const raw=await r.text();let d={};try{d=JSON.parse(raw)}catch(e){}
     const image=toImg(d);
@@ -478,7 +472,7 @@ function App(){
     h("div",{className:"scroll"},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
       !temp&&h("div",{className:"modes"},cards.map(c=>h("button",{key:c.k,className:"mc"+(c.on?" on":""),onClick:c.go},h("span",null,Ic(c.icon,26)),h("b",null,c.label),h("small",null,c.desc)))))
      :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
-    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:"",onError:e=>{e.target.style.display="none"}}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
+    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
     h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
       file&&h("div",{className:"file"},h("span",null,"📎 ",h("b",null,file.name)),h("button",{"aria-label":"Remove attachment",onClick:()=>setFile(null)},"×")),
       h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
