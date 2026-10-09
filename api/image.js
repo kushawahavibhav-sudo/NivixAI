@@ -1,52 +1,46 @@
-// api/image.js  (Vercel serverless function)
-// Needs the environment variable GEMINI_API_KEY (Vercel -> Settings -> Environment Variables), then redeploy.
-export const config = { maxDuration: 60 }; // image generation can take 10-30s
+// api/image.js  (Vercel serverless function, Cloudflare Workers AI / Flux)
+export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: { message: "Method not allowed" } });
+  }
 
-  const prompt = String((req.body && req.body.prompt) || "").trim();
-  if (!prompt) return res.status(400).json({ error: "Missing prompt" });
-  if (!process.env.GEMINI_API_KEY) {
-    return res.status(500).json({ error: "GEMINI_API_KEY is not set on the server" });
+  const prompt = String((req.body && req.body.prompt) || "").trim().slice(0, 2000);
+  if (!prompt) return res.status(400).json({ error: { message: "Missing prompt" } });
+
+  const { CLOUDFLARE_ACCOUNT_ID: acc, CLOUDFLARE_API_TOKEN: token } = process.env;
+  if (!acc || !token) {
+    return res.status(500).json({ error: { message: "Cloudflare keys are not set on the server" } });
   }
 
   try {
     const r = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+      `https://api.cloudflare.com/client/v4/accounts/${acc}/ai/run/@cf/black-forest-labs/flux-1-schnell`,
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          "x-goog-api-key": process.env.GEMINI_API_KEY,
         },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        body: JSON.stringify({ prompt, steps: 4 }),
       }
     );
-    const d = await r.json();
-    if (!r.ok) {
-      return res.status(502).json({ error: (d.error && d.error.message) || "Gemini error " + r.status });
-    }
 
-    const parts =
-      (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts) || [];
-    const imgPart = parts.find((p) => p.inlineData || p.inline_data);
-    const inl = imgPart && (imgPart.inlineData || imgPart.inline_data);
-    const text = parts.filter((p) => p.text).map((p) => p.text).join("\n");
+    const data = await r.json().catch(() => ({}));
 
-    if (!inl) {
-      const why =
-        (d.promptFeedback && d.promptFeedback.blockReason) ||
-        text ||
-        "The model returned no image (the prompt may have been blocked)";
-      return res.status(422).json({ error: why });
+    if (!r.ok || !data.result || !data.result.image) {
+      const msg =
+        (data.errors && data.errors[0] && data.errors[0].message) ||
+        "Image generation failed (HTTP " + r.status + ")";
+      return res.status(r.ok ? 502 : r.status).json({ error: { message: msg } });
     }
 
     return res.status(200).json({
-      image: `data:${inl.mimeType || inl.mime_type || "image/png"};base64,${inl.data}`,
-      text,
+      image: `data:image/jpeg;base64,${data.result.image}`,
+      text: "",
     });
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: { message: e.message } });
   }
 }
