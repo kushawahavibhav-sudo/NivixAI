@@ -3,6 +3,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"/>
 <title>NivixAI</title>
+<!-- icons: browser tab, iOS home screen, installable app manifest. Bump ?v= if a browser keeps showing the old icon. -->
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png?v=1"/>
+<link rel="shortcut icon" href="/icons/favicon.png?v=1"/>
+<link rel="apple-touch-icon" href="/icons/apple-touch.png?v=1"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
 <meta name="theme-color" content="#05060f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NivixAI">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -201,6 +206,8 @@ input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visi
 <script>
 const{useState,useEffect,useRef,useMemo}=React,h=React.createElement;
 const BRAND="NivixAI";
+const LOGO="/icons/logo.png"; // shown in the top bar and the "new chat" animation; hides itself if the file is missing
+const hideImg=e=>{e.currentTarget.style.display="none"};
 const STREAM=true;              // /api/chat pipes Groq's SSE stream through
 const MAXTOK=2048,FILE_MAX=20000; // reply token cap, max characters read from an attached file
 const DEFAULT_SYS="You are NivixAI, a helpful, precise engineering assistant.";
@@ -461,6 +468,7 @@ function App(){
   h("input",{type:"file",ref:bgRef,style:{display:"none"},accept:"image/*",onChange:onBgFile}),
   h("input",{type:"file",ref:fileRef,style:{display:"none"},accept:FILE_ACCEPT,onChange:onFile}),
   h("div",{className:"top"},h("button",{className:"ib menu-btn","aria-label":"Open menu",onClick:()=>setNavOpen(true)},Ic("menu",22)),
+   h("span",{className:"logo"},h("img",{src:LOGO,alt:"",width:34,height:34,onError:hideImg})),
    h("span",{className:"brand"},BRAND),
    h("span",{className:"tag"},"Your AI. Your Rules."),temp&&h("span",{className:"off on"},"◉ Temp"),h("div",{className:"sp"}),
    h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
@@ -472,7 +480,7 @@ function App(){
     h("div",{className:"scroll"},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
       !temp&&h("div",{className:"modes"},cards.map(c=>h("button",{key:c.k,className:"mc"+(c.on?" on":""),onClick:c.go},h("span",null,Ic(c.icon,26)),h("b",null,c.label),h("small",null,c.desc)))))
      :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
-    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
+    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:"",onError:hideImg}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
     h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
       file&&h("div",{className:"file"},h("span",null,"📎 ",h("b",null,file.name)),h("button",{"aria-label":"Remove attachment",onClick:()=>setFile(null)},"×")),
       h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
