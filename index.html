@@ -1,539 +1,92 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"/>
-<title>NivixAI</title>
-<!-- icons: browser tab, iOS home screen, installable app manifest. Bump ?v= if a browser keeps showing the old icon. -->
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png?v=2"/>
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=2"/>
-<link rel="shortcut icon" type="image/png" href="/icons/favicon.png?v=2"/>
-<link rel="apple-touch-icon" href="/icons/apple-touch.png?v=2"/>
-<link rel="manifest" href="/manifest.webmanifest"/>
-<meta name="theme-color" content="#05060f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NivixAI">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,signInWithPopup,GoogleAuthProvider,GithubAuthProvider,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,setDoc,deleteDoc,getDocs,collection}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-// NOTE: the Firebase project id is "nixlai" (the old name). That is an existing project setting, not the app name; leave it as is.
-const app=initializeApp({apiKey:"AIzaSyCu3bDYabkz0edUPt1ycnIav6NrRWIRg3M",authDomain:"nivixai-isgood24.firebaseapp.com",projectId:"nivixai-isgood24",storageBucket:"nivixai-isgood24.firebasestorage.app",messagingSenderId:"893109762101",appId:"1:893109762101:web:4e1a243ce25bb73355997c",measurementId:"G-H5K9NG8R4N"});
-const auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider(),ghp=new GithubAuthProvider(),W=window;
-W.__signIn=()=>signInWithPopup(auth,gp);
-W.__signInGithub=()=>signInWithPopup(auth,ghp);
-W.__signOut=()=>signOut(auth);
-W.__onAuth=cb=>onAuthStateChanged(auth,cb);
-// ID token sent to /api/* so the server can verify who is calling (verify it server-side with the Firebase Admin SDK)
-W.__token=async()=>auth.currentUser?auth.currentUser.getIdToken():null;
-
-// ---- chat sync ----
-const seen={},MAX_DOC=800000; // Firestore docs are capped at 1 MB
-const keyOf=(uid,c)=>uid+":"+c.id+":"+(c.updated||0)+":"+c.messages.length;
-const fit=m=>{let r=m;while(r.length>2&&JSON.stringify(r).length>MAX_DOC)r=r.slice(1);return r};
-W.__saveChats=async(uid,chats)=>{
- for(const c of chats){const k=keyOf(uid,c);if(seen[k])continue;
-  try{
-   const messages=fit(c.messages.filter(m=>!m.err).map(m=>m.image&&String(m.image).startsWith("data:")?{...m,image:null}:m));
-   await setDoc(doc(db,"users",uid,"chats",String(c.id)),JSON.parse(JSON.stringify({...c,messages})));
-   seen[k]=1;
-  }catch(e){console.error("Save failed",c.id,e)}}};
-W.__loadChats=async uid=>{
- const snap=await getDocs(collection(db,"users",uid,"chats"));
- const out=snap.docs.map(d=>d.data()).filter(c=>c&&c.id&&Array.isArray(c.messages));
- out.forEach(c=>{seen[keyOf(uid,c)]=1}); // already in the cloud, don't write them back
- return out.sort((a,b)=>(b.updated||b.id)-(a.updated||a.id))};
-W.__deleteChat=async(uid,id)=>{await deleteDoc(doc(db,"users",uid,"chats",String(id)))};
-W.dispatchEvent(new Event("firebase-ready"));
-</script>
+<!-- NivixAI redesign: paste this whole block right before </head> (after your existing </style>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ac:#6366f1;--ac2:#a855f7;--acr:99,102,241;--ac2r:168,85,247;--tr:11,13,34;--tx:#eceeff;--sub:#8b90b8;--nt:#cdd0f5;
---panel:rgba(var(--tr),.55);--card2:rgba(var(--tr),.5);--ibg:rgba(var(--tr),.65);--modal:rgba(var(--tr),.85);--line:rgba(255,255,255,.12);
---abg:#04050d;--cbg:rgba(var(--tr),.4);
---e:cubic-bezier(.2,.8,.2,1)}
-[data-theme=light]{--tx:#14162e;--sub:#5b6088;--nt:#2c3060;--tr:238,240,255;--panel:rgba(255,255,255,.55);--card2:rgba(255,255,255,.65);--ibg:rgba(255,255,255,.72);--modal:rgba(255,255,255,.88);--line:rgba(0,0,0,.08);--abg:#eef0fb;--cbg:rgba(255,255,255,.45)}
-html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
-body{font-family:Inter,-apple-system,'Segoe UI',sans-serif;background:#04050d;color:var(--tx)}
-#root{height:100dvh}
-button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
-input,textarea,select{font:inherit;color:inherit}:focus{outline:none}:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:rgba(var(--acr),.35);border-radius:4px}
-#bgl{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;animation:bgIn 1s ease both}
-#bgl::after{content:"";position:absolute;inset:0;background:rgba(var(--tr),.35);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-.app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--abg);position:relative;z-index:1;transition:background .6s}
-.app.fx{background:transparent}
-/* liquid glass */
-.top,.card,.center,.promo,.quote,.ibox,.modal,.pop{position:relative;border:1px solid var(--line);background:var(--panel);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.22)}
-.top::before,.card::before,.ibox::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 40%);opacity:.9}
-.card:hover,.mc:hover,.chip:hover{background-color:rgba(255,255,255,.06)}
-.top,.card,.center,.promo,.quote,.mc,.ibox,.btn,.ib,.send,.off,.opt,.chip,.nav button,.bub{transition:background-color .6s,border-color .6s,color .4s,box-shadow .4s,transform .25s var(--e)}
-.top{display:flex;align-items:center;gap:12px;padding:8px 16px;border-radius:16px;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:10px}.logo img{width:34px;height:34px;border-radius:22%;object-fit:cover}
-.brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:800;letter-spacing:.5px;white-space:nowrap;pointer-events:none}
-.tag{font-size:13px;color:var(--sub)}.sp{flex:1}
-.pill,.off{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;background:rgba(var(--acr),.16);font-size:13px;font-weight:600}
-.off.on{background:rgba(239,68,68,.2);color:#fca5a5}
-.dot{width:8px;height:8px;border-radius:50%;background:#22e58f;box-shadow:0 0 8px #22e58f}
-.ib{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--nt)}
-.ib:hover{background:rgba(var(--acr),.18);transform:scale(1.1)}.ib:active,.mc:active,.chip:active{transform:scale(.94)}
-.av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;border:2px solid rgba(var(--acr),.45);box-shadow:0 0 12px rgba(var(--acr),.25)}
-.menu-btn{display:none}
-.main{flex:1;min-height:0;display:grid;grid-template-columns:240px 1fr 290px;gap:12px}
-.side,.right{overflow-x:hidden;display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto}
-.card{border-radius:16px;padding:16px}
-.nav{display:flex;flex-direction:column;gap:4px}
-.nav button{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;font-size:15px;color:var(--nt);text-align:left;border:1px solid transparent}
-.nav button:hover{background:rgba(var(--acr),.16)}.nav button:hover svg{transform:translateX(3px)}.nav button svg{transition:transform .25s var(--e)}
-.nav button.on{background:rgba(var(--acr),.22);border-color:rgba(var(--acr),.4);color:var(--tx);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
-.promo,.quote{overflow:hidden;border-radius:16px;padding:22px 18px;font-weight:600;background:rgba(var(--acr),.12);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%)}
-.promo{flex:1;min-height:150px;font-size:17px;display:flex;flex-direction:column}
-.promo svg{position:absolute;inset:0;width:100%;height:100%;z-index:0}.promo span{position:relative;z-index:1;color:#fff;text-shadow:0 2px 10px rgba(10,6,40,.8)}
-.quote{flex:1;min-height:120px;display:flex;flex-direction:column;justify-content:center;font-size:18px;line-height:1.6}
-.h3{font-size:17px;font-weight:700;margin-bottom:10px}
-.row{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px}.row .k{flex:1}.row .v{color:var(--ac);font-weight:600;font-size:13px;filter:brightness(1.4)}
-.rc{display:flex;gap:12px;align-items:center;padding:9px 0;width:100%;text-align:left}
-.rc small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.rc .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;font-size:14px}
-.ico{width:34px;height:34px;border-radius:10px;background:rgba(var(--acr),.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--nt)}
-.hrow{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}.hrow .rc{flex:1;min-width:0}.hrow .rc>div{min-width:0}
-.center{min-width:0;min-height:0;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:var(--cbg)}
-.fx .center{background:var(--panel)}
-.scroll{overflow-x:hidden;position:relative;flex:1;min-height:0;overflow-y:auto;padding:22px;display:flex;flex-direction:column}
-.hero{margin:auto;width:100%;max-width:820px;display:flex;flex-direction:column;gap:22px;padding-bottom:30px}
-.hero h1{font-size:clamp(26px,4vw,38px);font-weight:800}.hero p{font-size:clamp(16px,2vw,21px);color:var(--nt);margin-top:6px}
-.modes{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.mc{padding:16px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card2);text-align:left;display:flex;flex-direction:column;gap:6px;animation:rise .5s var(--e) both}
-.mc:nth-child(2){animation-delay:.06s}.mc:nth-child(3){animation-delay:.12s}.mc:nth-child(4){animation-delay:.18s}.mc:nth-child(5){animation-delay:.24s}.mc:nth-child(6){animation-delay:.3s}
-.mc:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(var(--acr),.7)}
-.mc.on{border:1px solid rgba(var(--ac2r),.55);box-shadow:0 0 20px rgba(var(--ac2r),.25),inset 0 1px 0 rgba(255,255,255,.1);background:rgba(var(--ac2r),.15);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.mc b{font-size:15px}.mc small{font-size:11px;color:var(--sub)}.mc span{color:var(--ac2)}
-.msgs{width:100%;max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-.msg{display:flex;flex-direction:column;gap:3px;max-width:82%;min-width:0;animation:rise .45s var(--e) both}
-.msg.u{align-self:flex-end;align-items:flex-end}.msg.a{align-self:flex-start}
-.bub{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;border:1px solid var(--line);max-width:100%}
-.bub.md{white-space:normal}
-.u .bub{background:rgba(var(--acr),.32)}.a .bub{background:var(--card2)}
-.bub img{display:block;max-width:100%;border-radius:12px;margin-bottom:8px}.bub a{font-size:12px;color:var(--nt);display:inline-block;margin-bottom:6px}
-.fchip{font-size:12px;opacity:.85;margin-bottom:6px;white-space:normal}
-/* markdown */
-.mdc>:last-child{margin-bottom:0}
-.mdc p,.mdc ul,.mdc ol,.mdc blockquote,.mdc table,.mdc h1,.mdc h2,.mdc h3,.mdc h4{margin:0 0 .65em}
-.mdc ul,.mdc ol{padding-left:1.3em}.mdc li{margin:.15em 0}
-.mdc h1,.mdc h2,.mdc h3,.mdc h4{font-size:1.05em;line-height:1.3}
-.mdc a{font-size:inherit;color:var(--ac);text-decoration:underline;margin:0;display:inline;filter:brightness(1.35)}
-.mdc blockquote{border-left:3px solid rgba(var(--acr),.6);padding-left:10px;color:var(--nt)}
-.mdc code{font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:.88em;background:rgba(var(--acr),.18);padding:1px 5px;border-radius:5px}
-.mdc table{border-collapse:collapse;display:block;overflow-x:auto}.mdc th,.mdc td{border:1px solid var(--line);padding:5px 9px;text-align:left}
-.cb{margin:0 0 .65em;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.35)}
-.ch{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 4px 12px;font-size:11px;color:var(--sub);background:rgba(var(--acr),.14)}
-.cpb{font-size:11px;color:var(--nt);padding:3px 9px;border-radius:6px}.cpb:hover{background:rgba(255,255,255,.1)}
-.cb pre{margin:0;padding:10px 12px;overflow-x:auto}.cb code{background:none;padding:0;font-size:12.5px;line-height:1.5;white-space:pre;color:#e6e8ff}
-.acts{display:flex;flex-wrap:wrap;gap:2px;opacity:0;transition:.15s}.msg:hover .acts,.msg:focus-within .acts{opacity:1}@media(hover:none){.acts{opacity:1}}
-.acts button{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);padding:4px 8px;border-radius:7px}.acts button:hover{background:rgba(255,255,255,.08);color:var(--tx)}
-@keyframes bn{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
-.td{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ac);margin-right:5px;animation:bn 1.2s infinite}.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
-.inwrap{padding:0 22px 8px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.ibox{width:100%;max-width:800px;border-radius:22px;background:var(--ibg);padding:10px 14px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(var(--acr),.35);box-shadow:0 0 0 1px rgba(var(--acr),.12),0 0 24px rgba(var(--acr),.18),0 0 48px rgba(var(--acr),.08),inset 0 1px 0 rgba(255,255,255,.12);transition:border-color .35s,box-shadow .35s}
-.ibox.temp{border-color:rgba(239,68,68,.55);box-shadow:0 0 0 1px rgba(239,68,68,.2),0 0 24px rgba(239,68,68,.22),0 0 48px rgba(239,68,68,.1),inset 0 1px 0 rgba(255,255,255,.12)}
-.ibox .t{width:100%;border:none;background:none;font-size:15px;padding:8px 4px;resize:none;max-height:160px;line-height:1.45;display:block;overflow-y:auto}.ibox .t::placeholder{color:var(--sub)}
-.irow{display:flex;align-items:center;gap:4px}.irow .ib{width:32px;height:32px}
-.send{width:40px;height:40px;border-radius:12px;background:var(--ac);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(var(--acr),.4),0 0 16px rgba(var(--acr),.2);color:#fff;margin-left:6px;flex-shrink:0;transition:transform .2s var(--e),box-shadow .25s,background .25s,filter .2s}
-.send:hover{transform:scale(1.06);background:var(--ac2);box-shadow:0 4px 16px rgba(var(--acr),.5),0 0 24px rgba(var(--acr),.3)}.send:active{transform:scale(.93);filter:brightness(.92)}
-.try{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--sub)}
-.chip{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:18px;border:1px solid var(--line);background:var(--card2);color:var(--nt);font-size:12px}.chip:hover{border-color:rgba(var(--acr),.7)}
-.foot{text-align:center;font-size:12px;color:var(--sub);padding:4px 0 10px}
-.pop{position:absolute;bottom:calc(100% + 8px);right:0;min-width:190px;background:var(--modal);border-radius:14px;padding:6px;z-index:20;transform-origin:bottom right;animation:pop .25s var(--e) both}
-.pop button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:9px;font-size:14px}.pop button:hover,.pop button.on{background:rgba(var(--acr),.2)}.pop small{display:block;font-size:11px;color:var(--sub)}
-.file{font-size:12px;padding:4px 10px;border-radius:8px;background:rgba(var(--acr),.25);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.file span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .25s both}
-.modal{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--modal);border-radius:20px;padding:20px;animation:pop .4s cubic-bezier(.2,1.1,.3,1) both}
-.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:17px;font-weight:700}
-.lab{font-size:11px;color:var(--sub);margin:16px 0 6px;font-weight:700;letter-spacing:.5px}
-.fld{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:14px}select.fld option{background:var(--modal);color:var(--tx)}
-.btn{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:rgba(var(--acr),.14);font-size:14px;font-weight:600;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px}
-.btn:hover{background:rgba(var(--acr),.28)}.btn.red{color:#fca5a5;border-color:rgba(239,68,68,.4)}
-.err{font-size:12px;color:#fca5a5;background:rgba(239,68,68,.1);padding:8px;border-radius:8px;margin-bottom:8px}
-.mem{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.4}
-.opts{display:flex;gap:8px}.opt{flex:1;padding:12px 6px;border-radius:10px;border:1px solid var(--line);font-size:13px;font-weight:600;background:var(--card2)}.opt.on{border:2px solid var(--ac);box-shadow:0 0 14px rgba(var(--acr),.45)}
-.opt.red.on{border-color:#ef4444;color:#fca5a5;box-shadow:0 0 14px rgba(239,68,68,.4)}
-.ug{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.us{padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}.us.w2{grid-column:span 2}
-.us b{display:block;font-size:19px}.us small{font-size:10px;color:var(--sub);font-weight:700;letter-spacing:.4px}
-.lnk{font-size:12px;color:var(--sub);margin-top:8px;text-decoration:underline}
-.vm{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:12px}.vm small{display:block;font-size:11px;color:var(--sub)}
-.tg{width:44px;height:26px;border-radius:13px;background:rgba(255,255,255,.16);position:relative;flex-shrink:0;transition:background .3s}
-.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.2,1.2,.3,1)}.tg.on{background:var(--ac)}.tg.on::after{transform:translateX(18px)}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;background:var(--modal);color:var(--tx);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center;animation:toastIn .3s var(--e) both}
-@keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
-.nc{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;pointer-events:none;overflow:hidden;background:rgba(var(--tr),.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);animation:ncFade 1.15s ease both}
-.nc::before{content:"";position:absolute;top:0;bottom:0;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-18deg);animation:ncSweep 1s .1s ease-in-out both}
-.nc-orb{position:relative;width:104px;height:104px;display:flex;align-items:center;justify-content:center;animation:ncPop .7s cubic-bezier(.2,1.2,.3,1) both}
-.nc-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ac);opacity:0;animation:ncRing 1.1s ease-out both}.nc-ring:nth-child(2){animation-delay:.18s}.nc-ring:nth-child(3){animation-delay:.36s}
-.nc-spin{position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 55%,var(--ac) 85%,var(--ac2) 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:ncSpin .9s linear infinite}
-.nc-core{position:relative;overflow:hidden;width:62px;height:62px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 28px rgba(var(--acr),.5),inset 0 1px 0 rgba(255,255,255,.25);animation:ncPulse .9s ease-in-out infinite}
-.nc-logo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;background:#05060f;animation:ncPlus .7s .15s cubic-bezier(.2,1.3,.3,1) both}
-.nc-core svg{animation:ncPlus .7s .15s cubic-bezier(.2,1.3,.3,1) both}
-.nc-txt{font-size:15px;font-weight:700;letter-spacing:.5px;color:var(--tx);display:flex;align-items:center;gap:2px;animation:ncUp .5s .15s ease both}
-.nc-dots span{display:inline-block;animation:bn 1s infinite}.nc-dots span:nth-child(2){animation-delay:.15s}.nc-dots span:nth-child(3){animation-delay:.3s}
-@keyframes ncFade{0%{opacity:0}15%{opacity:1}72%{opacity:1}100%{opacity:0}}@keyframes ncSweep{from{left:-40%}to{left:120%}}
-@keyframes ncPop{from{transform:scale(.3) rotate(-90deg);opacity:0}to{transform:none;opacity:1}}@keyframes ncRing{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.6);opacity:0}}
-@keyframes ncSpin{to{transform:rotate(360deg)}}@keyframes ncPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-@keyframes ncPlus{from{transform:rotate(-180deg) scale(.2);opacity:0}to{transform:none;opacity:1}}@keyframes ncUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
-.enter{animation:rise .65s .55s var(--e) both}.enter .mc{animation:rise .5s var(--e) both}
-.enter .mc:nth-child(1){animation-delay:.7s}.enter .mc:nth-child(2){animation-delay:.76s}.enter .mc:nth-child(3){animation-delay:.82s}.enter .mc:nth-child(4){animation-delay:.88s}.enter .mc:nth-child(5){animation-delay:.94s}.enter .mc:nth-child(6){animation-delay:1s}
-@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
-@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes bgIn{from{opacity:0;filter:blur(14px)}to{opacity:1;filter:none}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
-@media(max-width:1100px){.main{grid-template-columns:240px 1fr}.right{display:none}}
-@media(max-width:768px){.main{grid-template-columns:1fr}.menu-btn{display:flex}.tag,.pill{display:none}
-.side{position:fixed;top:0;bottom:0;left:0;width:270px;z-index:90;padding:14px;background:var(--modal);border-right:1px solid var(--line);transform:translateX(-105%);transition:transform .4s var(--e)}.side.open{transform:none}
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;animation:fade .25s}.modes{grid-template-columns:repeat(3,1fr)}.scroll{padding:14px 12px}.inwrap{padding:0 12px 6px}.msg{max-width:94%}.ug{grid-template-columns:repeat(2,1fr)}.us.w2{grid-column:span 1}}
-#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:none}
-.promoart{position:absolute;inset:0;z-index:0}.promoart svg{position:absolute;inset:0;width:100%;height:100%}
-[data-theme=hacker]{--tr:0,10,0;--panel:rgba(0,10,0,.6);--line:#0a4a0a;--tx:#00ff41;--sub:#00a82b;--ac:#00ff41;--ac2:#00ff41;--acr:0,255,65;--ac2r:0,255,65;--card2:rgba(0,20,0,.7);--ibg:rgba(0,12,0,.9);--modal:#000;--nt:#00e03a;--cbg:transparent;--abg:transparent}
-[data-theme=hacker] body{font-family:'Courier New',Courier,monospace}[data-theme=hacker] *{border-radius:0!important}
-[data-theme=hacker] .send{background:transparent;border:1px solid #0f0;box-shadow:0 0 10px rgba(0,255,0,.4);color:#0f0}
-[data-theme=hacker] .promo,[data-theme=hacker] .quote{background:rgba(0,20,0,.6);color:var(--tx)}[data-theme=hacker] .promoart{opacity:.35;filter:hue-rotate(95deg) saturate(1.4)}
-[data-theme=hacker] .mc.on,[data-theme=hacker] .opt.on,[data-theme=hacker] .nav button.on{background:rgba(0,255,0,.12);border-color:#0f0;box-shadow:none}
-[data-theme=hacker] .u .bub{background:transparent}[data-theme=hacker] .av{color:#000;background:#0f0;border-color:#0f0}
-.promoart *{transition:fill .7s,stop-color .7s}
-.ibox .t:focus,.ibox .t:focus-visible{outline:none}
-.ibox:focus-within{border-color:rgba(var(--acr),.65);box-shadow:0 0 0 1px rgba(var(--acr),.3),0 0 0 4px rgba(var(--acr),.18),0 0 32px rgba(var(--acr),.28),0 0 64px rgba(var(--acr),.12),inset 0 1px 0 rgba(255,255,255,.18)}
-.ibox.temp:focus-within{border-color:rgba(239,68,68,.75);box-shadow:0 0 0 1px rgba(239,68,68,.35),0 0 0 4px rgba(239,68,68,.2),0 0 32px rgba(239,68,68,.3),0 0 64px rgba(239,68,68,.12),inset 0 1px 0 rgba(255,255,255,.18)}
-</style></head>
-<body><div id="root"></div>
-<script>
-const{useState,useEffect,useRef,useMemo}=React,h=React.createElement;
-const BRAND="NivixAI";
-const LOGO="/icons/logo.png"; // shown in the top bar and the "new chat" animation; hides itself if the file is missing
-const hideImg=e=>{e.currentTarget.style.display="none"};
-const STREAM=true;              // /api/chat pipes Groq's SSE stream through
-const MAXTOK=2048,FILE_MAX=20000; // reply token cap, max characters read from an attached file
-const DEFAULT_SYS="You are NivixAI, a helpful, precise engineering assistant.";
+/* NivixAI redesign: editorial serif + aurora glass + bento layout that fills every gap.
+   Load AFTER the inline <style> so it wins. All features/logic stay untouched. */
+:root{--serif:'Fraunces',Georgia,'Times New Roman',serif}
+body{font-family:Inter,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+[data-theme=hacker] body{font-family:'Courier New',Courier,monospace}
 
-/* ---------- storage (new nivixai_ keys, falls back to the old nixlai_ keys once) ---------- */
-const ls=(k,d)=>{try{return localStorage.getItem("nivixai_"+k)||localStorage.getItem("nixlai_"+k)||d}catch(e){return d}};
-const sv=(k,v)=>{try{localStorage.setItem("nivixai_"+k,v);return true}catch(e){return false}};
-const lj=(k,d)=>{try{const v=JSON.parse(ls(k,""));return v==null?d:v}catch(e){return d}};
+/* aurora backdrop (only when no wallpaper / matrix is active) */
+.app:not(.fx){gap:14px;padding:14px;padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));
+ background:
+  radial-gradient(55% 45% at 12% -5%,rgba(var(--acr),.34),transparent 70%),
+  radial-gradient(45% 40% at 100% 15%,rgba(var(--ac2r),.26),transparent 70%),
+  radial-gradient(55% 45% at 55% 112%,rgba(245,201,122,.14),transparent 70%),var(--abg)}
+.fx.app{gap:14px;padding:14px}
+.main{gap:14px;grid-template-columns:250px 1fr 310px}
+@media(max-width:1100px){.main{grid-template-columns:250px 1fr}}
+@media(max-width:768px){.main{grid-template-columns:1fr}.app:not(.fx),.fx.app{padding:10px;gap:10px}}
 
-const rid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const errMsg=d=>typeof(d&&d.error)==="string"?d.error:(d&&d.error&&d.error.message)||(d&&d.message)||"";
-/* pull an image out of whatever shape /api/image returns (data URI, URL, or raw base64) */
-const toImg=d=>{
- if(!d)return"";
- const v=d.image||d.imageUrl||d.url||d.b64_json||d.base64||(d.images&&d.images[0])||(d.data&&d.data[0]&&(d.data[0].url||d.data[0].b64_json));
- if(!v||typeof v!=="string")return"";
- return /^(data:|https?:\/\/|\/)/.test(v)?v:"data:image/png;base64,"+v};
+/* top bar */
+.top{padding:10px 20px;border-radius:22px}
+.brand{font-family:var(--serif);font-size:28px;font-weight:600;letter-spacing:-.02em;
+ background:linear-gradient(100deg,var(--tx) 35%,var(--ac2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme=hacker] .brand{-webkit-text-fill-color:currentColor;background:none}
+.tag{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+.pill{background:rgba(34,229,143,.12);color:#7be8b5;border:1px solid rgba(34,229,143,.25)}
 
-/* ---------- icons ---------- */
-const P={sun:"M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2",download:"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",home:"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",lock:"M5 11h14v10H5z M8 11V7a4 4 0 0 1 8 0v4",sliders:"M4 21v-7 M4 10V3 M12 21v-9 M12 8V3 M20 21v-5 M20 12V3 M1 14h6 M9 8h6 M17 16h6",clock:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6v6l4 2",bolt:"M13 2L3 14h9l-1 8 10-12h-9z",bulb:"M9 18h6 M10 22h4 M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z",book:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z",code:"M16 18l6-6-6-6 M8 6l-6 6 6 6",pen:"M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z",search:"M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3",image:"M3 3h18v18H3z M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M21 15l-5-5L5 21",send:"M22 2L11 13 M22 2l-7 20-4-9-9-4z",plus:"M12 5v14 M5 12h14",clip:"M21.4 11l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5",mic:"M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v4",menu:"M3 6h18 M3 12h18 M3 18h18",x:"M18 6L6 18 M6 6l12 12",copy:"M9 9h13v13H9z M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1",refresh:"M23 4v6h-6 M20.5 15a9 9 0 1 1-2.1-9.4L23 10",chat:"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",brain:"M12 2v20 M9.5 2A3.5 3.5 0 0 0 6 5.5 3.5 3.5 0 0 0 3 9c0 1.3.6 2.3 1.5 3A3.5 3.5 0 0 0 6 18.5 3.5 3.5 0 0 0 9.5 22 M14.5 2A3.5 3.5 0 0 1 18 5.5 3.5 3.5 0 0 1 21 9c0 1.3-.6 2.3-1.5 3a3.5 3.5 0 0 1-1.5 6.5 3.5 3.5 0 0 1-3.5 3.5",tool:"M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z",speak:"M11 5L6 9H2v6h4l5 4z M15.5 8.5a5 5 0 0 1 0 7 M19 5a9 9 0 0 1 0 14",help:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01",trash:"M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v6 M14 11v6",stop:"M6 6h12v12H6z"};
-const Ic=(n,s=18)=>h("svg",{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"},h("path",{d:P[n]}));
+/* sidebar */
+.nav{padding:8px;border-radius:22px;border:1px solid var(--line);background:var(--panel);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%)}
+.nav button{padding:14px 16px;border-radius:14px;font-weight:500}
+.nav button.on{background:linear-gradient(90deg,rgba(var(--acr),.38),rgba(var(--ac2r),.12));border-color:rgba(var(--acr),.45)}
+.promo{border-radius:22px;min-height:240px;padding:24px 20px;font-family:var(--serif);font-size:23px;line-height:1.2;font-weight:500;letter-spacing:-.01em}
+.promo::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(5,6,15,.55),transparent 45%);pointer-events:none}
+.promo span{z-index:1}
 
-const PROMO_SVG=`<svg viewBox="0 0 240 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--s1,#140f45)"/><stop offset=".45" style="stop-color:var(--s2,#5b3a9e)"/><stop offset=".72" style="stop-color:var(--s3,#e0768f)"/><stop offset="1" style="stop-color:var(--s4,#ffb26b)"/></linearGradient><radialGradient id="pSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff2c9"/><stop offset=".45" stop-color="#ffc77a" stop-opacity=".85"/><stop offset="1" stop-color="#ff9a6b" stop-opacity="0"/></radialGradient><linearGradient id="pRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--m5,#2b2260)"/><stop offset="1" style="stop-color:var(--m6,#150f38)"/></linearGradient><radialGradient id="pLamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><rect width="240" height="400" fill="url(#pSky)"/><g fill="#fff"><circle cx="30" cy="30" r="1"/><circle cx="70" cy="14" r="1.2"/><circle cx="120" cy="38" r=".9"/><circle cx="170" cy="18" r="1.1"/><circle cx="210" cy="44" r="1"/><circle cx="200" cy="90" r=".8"/><circle cx="50" cy="80" r=".8"/><circle cx="140" cy="70" r=".7"/></g><circle cx="165" cy="268" r="62" fill="url(#pSun)"/><circle cx="165" cy="270" r="22" style="fill:var(--sun,#ffe2a8)"/><polygon points="0,300 0,262 38,236 70,264 112,222 150,270 190,246 240,282 240,300" style="fill:var(--m1,#4a3290)"/><polygon points="0,320 0,286 30,270 66,292 104,262 146,294 188,274 240,300 240,320" style="fill:var(--m2,#2e2070)"/><g style="fill:var(--m3,#1a1245)"><polygon points="8,318 14,288 20,318"/><polygon points="18,320 25,280 32,320"/><polygon points="30,318 36,292 42,318"/><polygon points="206,320 212,290 218,320"/><polygon points="218,320 225,284 232,320"/></g><rect y="316" width="240" height="40" style="fill:var(--m4,#1d1448)"/><polygon points="0,350 240,350 240,400 0,400" fill="url(#pRoad)"/><line x1="0" y1="384" x2="240" y2="384" stroke="#e5d6ff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="12 9"/><ellipse cx="172" cy="368" rx="52" ry="5" fill="#000" opacity=".35"/><ellipse cx="84" cy="364" rx="16" ry="3" fill="#000" opacity=".35"/><path d="M126 360 L126 348 Q126 343 132 342 L150 339 L160 326 Q163 323 168 323 L194 323 Q199 323 202 327 L210 339 L216 342 Q221 343 221 348 L221 360 Z" fill="#0d0a2a"/><polygon points="163,338 170,328 186,328 186,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><polygon points="190,338 190,328 197,328 205,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><circle cx="146" cy="361" r="8.5" fill="#05040f"/><circle cx="146" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="201" cy="361" r="8.5" fill="#05040f"/><circle cx="201" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="128" cy="349" r="10" fill="url(#pLamp)"/><circle cx="128" cy="349" r="2.4" fill="#ffe9b8"/><g stroke="#0a0820" stroke-linecap="round" stroke-linejoin="round" fill="none"><line x1="82" y1="342" x2="75" y2="363" stroke-width="4.6"/><line x1="82" y1="342" x2="92" y2="362" stroke-width="4.6"/><line x1="82" y1="324" x2="82" y2="343" stroke-width="9.5"/><line x1="82" y1="327" x2="75" y2="339" stroke-width="3.6"/><polyline points="83,327 92,335 98,331" stroke-width="3.6"/></g><circle cx="82" cy="316" r="5.8" fill="#0a0820"/><path d="M95 324 L102.5 324 L101.4 333 L96.1 333 Z" fill="#f6ead2"/><rect x="94.6" y="323" width="8.3" height="1.8" rx=".9" fill="#d9c7a4"/><path d="M97 320 q-2.2 -3 0 -5.5 M100.5 320 q-2.2 -3 0 -5.5" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`;
+/* centre stage */
+.center{border-radius:28px}
+.center::before{content:"";position:absolute;left:10%;right:10%;top:-60px;height:140px;background:radial-gradient(closest-side,rgba(var(--ac2r),.35),transparent);pointer-events:none;filter:blur(20px)}
+.scroll{padding:30px 30px 18px}
+.hero.enter{max-width:none;margin:0;flex:1;justify-content:space-between;gap:28px;padding:4px 0 6px}
+.hero h1{font-family:var(--serif);font-size:clamp(34px,4.8vw,62px);font-weight:500;letter-spacing:-.03em;line-height:1.04;
+ background:linear-gradient(95deg,var(--tx) 45%,var(--ac2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme=hacker] .hero h1{-webkit-text-fill-color:currentColor;background:none}
+.hero p{font-size:clamp(16px,1.8vw,20px);margin-top:10px}
 
-/* ---------- background fx (matrix / rain) ---------- */
-function useFx(kind,ref){useEffect(()=>{const cv=ref.current;if(!cv)return;cv.style.display=kind?"block":"none";if(!kind)return;const x=cv.getContext("2d");let id,drops;const fs=15,chars="アイウエオカキクケコサシスセソ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=<>[]{}";
- const size=()=>{cv.width=innerWidth;cv.height=innerHeight;if(kind==="matrix"){drops=Array.from({length:Math.max(1,Math.floor(cv.width/fs))},()=>Math.random()*-50);x.fillStyle="#000";x.fillRect(0,0,cv.width,cv.height)}else drops=Array.from({length:Math.floor(cv.width*cv.height/9000)},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,l:10+Math.random()*20,s:4+Math.random()*6,o:.15+Math.random()*.35}))};
- const draw=()=>{if(kind==="matrix"){x.fillStyle="rgba(0,0,0,.08)";x.fillRect(0,0,cv.width,cv.height);x.font=fs+"px 'Courier New',monospace";drops.forEach((d,i)=>{const c=chars[Math.floor(Math.random()*chars.length)],py=d*fs;x.fillStyle="#c8ffc8";x.fillText(c,i*fs,py);x.fillStyle="rgba(0,255,70,.75)";x.fillText(c,i*fs,py-fs);if(py>cv.height&&Math.random()>.975)drops[i]=0;drops[i]++})}
-  else{x.clearRect(0,0,cv.width,cv.height);x.fillStyle="rgba(15,23,42,.35)";x.fillRect(0,0,cv.width,cv.height);x.strokeStyle="rgba(174,214,241,.55)";drops.forEach(d=>{x.globalAlpha=d.o;x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-2,d.y+d.l);x.stroke();d.y+=d.s;d.x-=.6;if(d.y>cv.height){d.y=-d.l;d.x=Math.random()*cv.width}});x.globalAlpha=1}id=requestAnimationFrame(draw)};
- size();addEventListener("resize",size);draw();return()=>{cancelAnimationFrame(id);removeEventListener("resize",size)}},[kind])}
+/* mode cards stretch to fill all remaining height */
+.modes{flex:1;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(120px,1fr);gap:14px}
+.mc{position:relative;overflow:hidden;padding:20px;border-radius:24px;gap:4px;
+ background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.015)),var(--card2)}
+.mc::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;
+ background:radial-gradient(circle,rgba(var(--acr),.4),transparent 70%);opacity:.55;transition:opacity .4s,transform .5s var(--e);pointer-events:none}
+.mc:hover::after,.mc.on::after{opacity:1;transform:scale(1.35)}
+.mc span{margin-bottom:auto;width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+ background:rgba(var(--ac2r),.16);border:1px solid rgba(var(--ac2r),.35)}
+.mc b{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.01em}
+.mc small{font-size:12.5px}
+@media(max-width:768px){.modes{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(104px,1fr)}.scroll{padding:16px 12px}.mc b{font-size:20px}}
 
-/* ---------- constants ---------- */
-const MODES=[{id:"⚡ Nix",label:"Nix",desc:"Fast & helpful",icon:"bolt"},{id:"🧠 Deep",label:"Think",desc:"Deep analysis",icon:"brain"},{id:"📚 Study",label:"Study",desc:"Step-by-step",icon:"book"},{id:"💻 Dev",label:"Dev",desc:"Code & build",icon:"code"},{id:"📷 Image",label:"Image",desc:"Image generation",icon:"image"}];
-const DIRECTIVES={"🧠 Deep":"\n\n[SYSTEM DIRECTIVE: Deep Mode Active. Think through the problem step-by-step and give a detailed, comprehensive analysis.]","📚 Study":"\n\n[SYSTEM DIRECTIVE: Study Mode Active. Act as a patient tutor and explain step-by-step.]","💻 Dev":"\n\n[SYSTEM DIRECTIVE: Dev Mode Active. You are an expert developer. Give clean, working, efficient code.]"};
-// Keep in sync with the model whitelist on your server.
-const MODELS=[["openai/gpt-oss-20b","GPT-OSS 20B"],["meta-llama/llama-prompt-guard-2-22m","Llama Prompt Guard 2 22M"],["qwen/qwen3.8-27b","Qwen3.8 27B"]];
-const RATE={"openai/gpt-oss-20b":.15,"meta-llama/llama-prompt-guard-2-22m":.05,"qwen/qwen3.8-27b":.25};
-const U0={messages:0,chats:0,tokens:0,spend:0,days:[],models:{}},tok=s=>Math.ceil((s||"").length/4);
-const FILE_ACCEPT=".txt,.md,.json,.csv,.tsv,.log,.js,.jsx,.ts,.tsx,.py,.html,.css,.java,.c,.cpp,.h,.go,.rs,.rb,.php,.sh,.yml,.yaml,.xml,.sql,.toml,.ini,text/*";
+/* input */
+.inwrap{padding:0 30px 10px}
+.ibox{border-radius:26px;padding:14px 18px;max-width:none}
+.ibox .t{font-size:16px;padding:8px 4px}
+.send{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,var(--ac),var(--ac2))}
+.send:hover{background:linear-gradient(135deg,var(--ac2),var(--ac))}
+.chip{padding:8px 14px;border-radius:20px;font-size:12.5px}
+.foot{padding:2px 0 12px}
+@media(max-width:768px){.inwrap{padding:0 12px 6px}}
 
-const ago=ts=>{const s=Math.max(0,(Date.now()-ts)/1000|0);if(s<60)return"Just now";const m=s/60|0;if(m<60)return m+(m===1?" min ago":" mins ago");const hh=m/60|0;if(hh<24)return hh+(hh===1?" hr ago":" hrs ago");const d=hh/24|0;return d<30?d+(d===1?" day ago":" days ago"):(d/30|0)+" mo ago"};
-const plain=t=>String(t||"").replace(/```[\s\S]*?```/g," code block. ").replace(/[*_`#>~|]/g,"");
-const say=(t,end)=>{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(plain(t)),v=s.getVoices().find(x=>x.name===window.__voice);if(v)u.voice=v;if(end)u.onend=u.onerror=end;s.speak(u)};
-const copyText=t=>(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject());
+/* messages */
+.msgs{max-width:860px;gap:18px}
+.msg{max-width:88%}
+.bub{padding:14px 18px;border-radius:22px;font-size:15px;line-height:1.65}
+.u .bub{background:linear-gradient(135deg,rgba(var(--acr),.55),rgba(var(--ac2r),.38));border-color:rgba(255,255,255,.2)}
+.a .bub{background:var(--card2)}
+[data-theme=hacker] .u .bub{background:transparent}
 
-/* what the model actually receives for a stored message (attached files are inlined) */
-const toModel=m=>m.sender==="user"?(m.ctx?`[Attached file: ${m.file}]\n\`\`\`\n${m.ctx}\n\`\`\`\n\n`:"")+(m.prompt||m.text):m.text;
-const mkTitle=hist=>{const f=hist.find(x=>x.sender==="user"),t=((f&&(f.text||f.file))||"New chat").split("\n")[0].trim()||"New chat";return t.length>28?t.slice(0,28)+"…":t};
+/* right column: every card grows, no dead space */
+.right .card{border-radius:22px;padding:20px}
+.right>.card:nth-child(2){flex:1;display:flex;flex-direction:column}
+.right>.card:nth-child(2)>div:last-child{margin:auto}
+.h3{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.row{padding:12px 0}
+.quote{border-radius:22px;flex:1;min-height:170px;padding:26px 22px;font-family:var(--serif);font-size:25px;font-weight:500;line-height:1.3;letter-spacing:-.01em}
+.quote::before{content:"\201C";position:absolute;right:14px;top:-18px;font-size:130px;line-height:1;opacity:.14;color:var(--ac2)}
 
-/* ---------- markdown (marked + DOMPurify, with plain-text fallback) ---------- */
-let mdReady=false;
-const initMd=()=>{if(mdReady)return true;if(!window.marked||!window.DOMPurify)return false;
- marked.use({gfm:true,breaks:true,renderer:{code(code,lang){const l=String(lang||"").split(/\s/)[0].replace(/[^\w+#.-]/g,"");return`<div class="cb"><div class="ch"><span>${esc(l||"code")}</span><button type="button" class="cpb">Copy</button></div><pre><code>${esc(code)}</code></pre></div>`}}});
- DOMPurify.addHook("afterSanitizeAttributes",n=>{if(n.tagName==="A"){n.setAttribute("target","_blank");n.setAttribute("rel","noopener noreferrer")}});
- return mdReady=true};
-const md=t=>{try{if(initMd())return DOMPurify.sanitize(marked.parse(t||""),{ADD_ATTR:["target"],FORBID_TAGS:["img","style","form","input"]})}catch(e){}return esc(t||"").replace(/\n/g,"<br>")};
-
-/* ---------- colour extraction ---------- */
-const hsl=(H,S,L)=>{S/=100;L/=100;const k=n=>(n+H/30)%12,a=S*Math.min(L,1-L),f=n=>L-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return[f(0),f(8),f(4)].map(v=>Math.round(v*255))};
-const toHsl=(r,g,b)=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;if(!d)return[0,0,l];const s=d/(1-Math.abs(2*l-1)),H=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;return[(H*60+360)%360,s,l]};
-const palette=src=>new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=c.height=48;const x=c.getContext("2d");x.drawImage(im,0,0,48,48);const d=x.getImageData(0,0,48,48).data,B=Array.from({length:18},()=>({w:0,h:0}));
- for(let i=0;i<d.length;i+=4){const[H,s,l]=toHsl(d[i],d[i+1],d[i+2]);if(s<.22||l<.12||l>.92)continue;const w=s*(1-Math.abs(l-.5)),b=B[(H/20|0)%18];b.w+=w;b.h+=w*H}
- const t=B.map(b=>({w:b.w,h:b.w?b.h/b.w:0})).sort((a,b)=>b.w-a.w);if(t[0].w<1)return res(null);
- const s2=t.find(q=>q.w>t[0].w*.2&&Math.min(Math.abs(q.h-t[0].h),360-Math.abs(q.h-t[0].h))>35);res({h1:t[0].h,h2:s2?s2.h:(t[0].h+40)%360})};im.onerror=()=>res(null);im.src=src});
-
-/* ---------- components ---------- */
-function Msg({m,onRetry,onEdit,onExplain}){
- const[c,setC]=useState(false),[sp,setSp]=useState(false),u=m.sender==="user";
- const html=useMemo(()=>u?"":md(m.text),[m.text,u]);
- useEffect(()=>()=>{if(sp)window.speechSynthesis&&window.speechSynthesis.cancel()},[sp]);
- const speak=()=>{const s=window.speechSynthesis;if(!s)return;if(sp){s.cancel();setSp(false);return}setSp(true);say(m.text,()=>setSp(false))};
- const onMd=e=>{const b=e.target.closest&&e.target.closest(".cpb");if(!b)return;const code=(b.closest(".cb")?.querySelector("code")?.textContent)||"";copyText(code).then(()=>{b.textContent="Copied";setTimeout(()=>{b.textContent="Copy"},1400)}).catch(()=>{})};
- return h("div",{className:"msg "+(u?"u":"a")},
-  h("div",{className:"bub"+(u?"":" md")},
-   m.image&&h("img",{src:m.image,alt:"Generated image"}),m.image&&h("a",{href:m.image,download:"nivixai-image.png"},"⬇ Download"),
-   u?[m.file&&h("div",{className:"fchip",key:"f"},"📎 "+m.file),m.text]
-    :(m.text?h("div",{className:"mdc",dangerouslySetInnerHTML:{__html:html},onClick:onMd}):null)),
-  h("div",{className:"acts"},
-   h("button",{onClick:()=>copyText(m.text||"").then(()=>{setC(true);setTimeout(()=>setC(false),1400)}).catch(()=>{})},Ic("copy",13),c?"Copied":"Copy"),
-   u?h("button",{onClick:()=>onEdit(m)},Ic("pen",13),"Edit")
-   :[h("button",{key:1,onClick:speak,style:sp?{color:"var(--ac)"}:null},Ic("speak",13),sp?"Stop":"Speak"),h("button",{key:2,onClick:()=>onExplain(m)},Ic("help",13),"Explain"),h("button",{key:3,onClick:()=>onRetry(m)},Ic("refresh",13),"Regenerate")]));
-}
-
-// Accessible modal: role=dialog, labelled, focus is trapped and restored on close
-function Modal({title,onClose,children,z}){
- const ref=useRef(null),id=useRef("m"+rid()).current;
- useEffect(()=>{const el=ref.current,prev=document.activeElement;
-  const f=()=>[...el.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&x.offsetParent!==null);
-  const kd=e=>{if(e.key!=="Tab")return;const l=f();if(!l.length){e.preventDefault();return}const a=l[0],b=l[l.length-1],cur=document.activeElement;
-   if(e.shiftKey&&(cur===a||cur===el)){e.preventDefault();b.focus()}else if(!e.shiftKey&&cur===b){e.preventDefault();a.focus()}};
-  el.addEventListener("keydown",kd);if(!el.contains(document.activeElement))el.focus();
-  return()=>{el.removeEventListener("keydown",kd);prev&&prev.focus&&prev.focus()}},[]);
- return h("div",{className:"ov",style:z?{zIndex:z}:null,onMouseDown:e=>{if(e.target===e.currentTarget)onClose()}},
-  h("div",{className:"modal",ref,role:"dialog","aria-modal":"true","aria-labelledby":id,tabIndex:-1},
-   h("div",{className:"mh"},h("span",{id},title),h("button",{className:"ib","aria-label":"Close",onClick:onClose},Ic("x"))),children));
-}
-
-// Replaces prompt()/confirm(): d={title,text,input,multi,value,ok,danger,onOk}
-function Dialog({d,onClose}){
- const[v,setV]=useState(d.value||"");
- const ok=()=>{if(d.input&&!v.trim())return;onClose();d.onOk&&d.onOk(v.trim())};
- return h(Modal,{title:d.title,onClose,z:110},
-  d.text&&h("p",{style:{fontSize:14,lineHeight:1.5,color:"var(--nt)",marginBottom:d.input?10:0}},d.text),
-  d.input&&(d.multi?h("textarea",{className:"fld",autoFocus:true,rows:5,style:{resize:"vertical"},value:v,onChange:e=>setV(e.target.value)})
-   :h("input",{className:"fld",autoFocus:true,value:v,placeholder:d.placeholder||"",onChange:e=>setV(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.nativeEvent.isComposing)ok()}})),
-  h("div",{className:"opts",style:{marginTop:14}},h("button",{className:"opt",onClick:onClose},"Cancel"),h("button",{className:"opt on"+(d.danger?" red":""),onClick:ok},d.ok||"OK")));
-}
-
-function App(){
- const[ready,setReady]=useState(!!window.__signIn),[loggedIn,setLoggedIn]=useState(false),[realName,setRealName]=useState("Guest User"),[email,setEmail]=useState(""),[photo,setPhoto]=useState(null),[authErr,setAuthErr]=useState("");
- // persisted settings
- const[nick,setNick]=useState(()=>ls("nick","Chief")),[model,setModel]=useState(()=>{const m=ls("model","");return MODELS.some(x=>x[0]===m)?m:MODELS[0][0]}),[sysPrompt,setSysPrompt]=useState(()=>ls("sys",DEFAULT_SYS));
- const[mems,setMems]=useState(()=>{const a=lj("mems",[]);return Array.isArray(a)?a:[]});
- const[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false);
- const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
- const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
- const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
- const[usage,setUsage]=useState(()=>{try{return{...U0,...JSON.parse(ls("usage","{}"))}}catch(e){return U0}});
- const[voices,setVoices]=useState([]),[voiceName,setVoiceName]=useState(()=>ls("voice","")),[voiceMode,setVoiceMode]=useState(()=>ls("voiceMode","0")==="1");
- const fxRef=useRef(null),uidRef=useRef(null),endRef=useRef(null),fileRef=useRef(null),bgRef=useRef(null),inRef=useRef(null),recRef=useRef(null),popRef=useRef(null),ncT=useRef(null),toastT=useRef(null);
- const sess=useRef(0),abortRef=useRef(null); // sess changes whenever the visible chat changes, so late replies never land in the wrong chat
- const hacker=theme==="hacker",hasBg=bgMode==="custom"&&!!customBg&&!hacker,fxKind=hacker?"matrix":bgMode==="rain"?"rain":null,fx=hasBg||!!fxKind,modelLabel=(MODELS.find(m=>m[0]===model)||[0,model])[1],hr=new Date().getHours(),greet=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
- const chatTime=c=>c.id===activeId?"Just now":ago(c.updated||c.id);
- const notify=t=>{setToast(t);clearTimeout(toastT.current);toastT.current=setTimeout(()=>setToast(""),3200)};
- const bump=()=>{sess.current++;setThinking(false)};
- const ask=d=>setDlg(d);
-
- useFx(fxKind,fxRef);
- useEffect(()=>{const t=setInterval(()=>setTick(x=>x+1),30000);return()=>clearInterval(t)},[]);
- useEffect(()=>{document.documentElement.dataset.theme=theme;sv("theme",theme)},[theme]);
- useEffect(()=>{sv("bgMode",bgMode)},[bgMode]);
- useEffect(()=>{sv("usage",JSON.stringify(usage))},[usage]);
- useEffect(()=>{sv("model",model)},[model]);
- useEffect(()=>{sv("sys",sysPrompt)},[sysPrompt]);
- useEffect(()=>{sv("mems",JSON.stringify(mems))},[mems]);
- useEffect(()=>{const d=new Date().toDateString();setUsage(u=>u.days.includes(d)?u:{...u,days:[...u.days,d].slice(-365)})},[]);
- useEffect(()=>{endRef.current&&endRef.current.scrollIntoView({behavior:thinking?"auto":"smooth"})},[msgs,thinking]);
- useEffect(()=>{const el=inRef.current;if(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,160)+"px"}},[input]);
- // accent colours follow wallpaper
- useEffect(()=>{const r=document.documentElement.style,AK=["s1","s2","s3","s4","m1","m2","m3","m4","m5","m6","m7","m8","sun"].map(k=>"--"+k),K=["--ac","--ac2","--acr","--ac2r","--tr",...AK],reset=()=>{K.forEach(k=>r.removeProperty(k));document.querySelector("meta[name=theme-color]")?.setAttribute("content","#05060f")};
-  if(!hasBg)return reset();let dead=0;
-  palette(customBg).then(p=>{if(dead)return;if(!p)return reset();const a=hsl(p.h1,75,64),b=hsl(p.h2,72,62),t=theme==="light"?hsl(p.h1,60,95):hsl(p.h1,45,8);
-   r.setProperty("--ac",`rgb(${a})`);r.setProperty("--ac2",`rgb(${b})`);r.setProperty("--acr",a.join(","));r.setProperty("--ac2r",b.join(","));r.setProperty("--tr",t.join(","));
-   const g=(H,S,L)=>`rgb(${hsl(H,S,L)})`,art={"--s1":g(p.h1,60,16),"--s2":g(p.h1,45,42),"--s3":g(p.h2,65,66),"--s4":g(p.h2,90,72),"--m1":g(p.h1,45,36),"--m2":g(p.h1,55,25),"--m3":g(p.h1,55,16),"--m4":g(p.h1,50,18),"--m5":g(p.h1,45,24),"--m6":g(p.h1,55,14),"--m7":g(p.h1,45,65),"--m8":g(p.h1,30,40),"--sun":g(p.h2,90,78)};Object.entries(art).forEach(([k,v])=>r.setProperty(k,v));
-   document.querySelector("meta[name=theme-color]")?.setAttribute("content",`rgb(${t})`)});return()=>{dead=1}},[customBg,hasBg,theme]);
- useEffect(()=>{const mv=e=>{const t=e.target.closest?.(".card,.mc,.chip");if(!t)return;const r=t.getBoundingClientRect();t.style.setProperty("--mx",e.clientX-r.left+"px");t.style.setProperty("--my",e.clientY-r.top+"px")};document.addEventListener("pointermove",mv,{passive:true});return()=>document.removeEventListener("pointermove",mv)},[]);
- useEffect(()=>{const s=window.speechSynthesis;if(!s)return;const f=()=>setVoices(s.getVoices());f();s.addEventListener("voiceschanged",f);return()=>s.removeEventListener("voiceschanged",f)},[]);
- useEffect(()=>{window.__voice=voiceName;sv("voice",voiceName);sv("voiceMode",voiceMode?"1":"0")},[voiceName,voiceMode]);
- useEffect(()=>{if(window.__signIn)return setReady(true);const f=()=>setReady(true);addEventListener("firebase-ready",f);return()=>removeEventListener("firebase-ready",f)},[]);
- // debounced cloud save (only chats that changed are written)
- useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length||!window.__saveChats)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),1500);return()=>clearTimeout(t)},[chats,loggedIn]);
- useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{bump();setActiveId(null);setMsgs([]);
-  if(user){const n=user.displayName||"Google User";setRealName(n);if(!ls("nick",""))setNick(n.split(" ")[0]);setEmail(user.email||"");setPhoto(user.photoURL);setLoggedIn(true);uidRef.current=user.uid;setChats([]);
-   window.__loadChats(user.uid).then(c=>{if(uidRef.current===user.uid)setChats(c)}).catch(e=>{console.error(e);notify("Couldn't load your saved chats.")})}
-  else{uidRef.current=null;setRealName("Guest User");setEmail("");setPhoto(null);setLoggedIn(false);setChats([])}})},[ready]);
- useEffect(()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;const r=new SR();r.continuous=false;r.interimResults=false;r.lang="en-US";
-  r.onresult=e=>setInput(p=>p?p+" "+e.results[0][0].transcript:e.results[0][0].transcript);r.onend=r.onerror=()=>setRec(false);recRef.current=r},[]);
- useEffect(()=>{const c=e=>{if(modeMenu&&popRef.current&&!popRef.current.contains(e.target))setModeMenu(false)};document.addEventListener("mousedown",c);return()=>document.removeEventListener("mousedown",c)},[modeMenu]);
- useEffect(()=>{const k=e=>{if(e.key!=="Escape")return;if(dlg)setDlg(null);else setModal(null)};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[dlg]);
-
- /* ----- actions ----- */
- const onBgFile=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(!f.type.startsWith("image/"))return notify("Please choose an image file.");
-  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let url="";
-   for(const[mx,q]of[[1600,.8],[1280,.75],[960,.7],[720,.65]]){const sc=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc)||1;c.height=Math.round(im.height*sc)||1;
-    c.getContext("2d").drawImage(im,0,0,c.width,c.height);url=c.toDataURL("image/jpeg",q);if(sv("customBgUrl",url))break}
-   setCustomBg(url);setBgMode("custom")};im.src=r.result};r.readAsDataURL(f)};
- const onFile=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
-  if(f.size>1000000)return notify("That file is too large (max 1 MB).");
-  const r=new FileReader();r.onload=()=>{const t=String(r.result||"");if(t.slice(0,2000).indexOf("\u0000")!==-1)return notify("That looks like a binary file. Only text and code files are supported.");
-   const cut=t.length>FILE_MAX;setFile({name:f.name,text:cut?t.slice(0,FILE_MAX)+"\n…[file truncated]":t});if(cut)notify(`Only the first ${FILE_MAX.toLocaleString()} characters will be used.`)};
-  r.onerror=()=>notify("Couldn't read that file.");r.readAsText(f)};
- const exportChat=()=>{if(!msgs.length)return notify("Open or start a chat first.");const a=document.createElement("a");
-  const url=URL.createObjectURL(new Blob(["# "+BRAND+" chat\n\n"+msgs.filter(m=>!m.err).map(m=>`**${m.sender==="user"?"You":BRAND}:** ${m.image?"[image] ":""}${m.file?"[file: "+m.file+"] ":""}${m.text}`).join("\n\n")+"\n"],{type:"text/plain;charset=utf-8"}));
-  a.href=url;a.download=`nivixai-chat-${new Date().toISOString().slice(0,10)}.md`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};
- const oauth=async name=>{setAuthErr("");
-  if(!window[name])await new Promise(r=>{const t=setTimeout(r,6000);addEventListener("firebase-ready",()=>{clearTimeout(t);r()},{once:true})});
-  if(!window[name])return setAuthErr("Sign-in couldn't load. Check your connection or any ad blocker blocking gstatic.com, open the site over https, then reload.");
-  try{await window[name]();setModal(null)}catch(e){if(["auth/popup-closed-by-user","auth/cancelled-popup-request"].includes(e.code))return;
-   setAuthErr(e.code==="auth/account-exists-with-different-credential"?"An account with this email already exists with a different sign-in method.":e.code==="auth/popup-blocked"?"Popup blocked. Allow popups for this site and try again.":e.code==="auth/unauthorized-domain"?"This domain isn't authorized in Firebase (Authentication → Settings → Authorized domains).":e.message||"Sign-in failed.")}};
- const maskEmail=s=>{if(!s||!s.includes("@"))return"Email hidden";const at=s.lastIndexOf("@"),l=s.slice(0,at),d=s.slice(at);return l.length<=2?l[0]+"#"+d:l.length<=4?l[0]+"#".repeat(l.length-1)+d:l.slice(0,2)+"#".repeat(l.length-4)+l.slice(-2)+d};
- const newChat=()=>{bump();setActiveId(null);setMsgs([]);setInput("");setFile(null);setNavOpen(false);setChatKey(k=>k+1);setNcAnim(true);clearTimeout(ncT.current);ncT.current=setTimeout(()=>setNcAnim(false),1150)};
- const openChat=c=>{bump();setActiveId(c.id);setMsgs(c.messages);setTemp(false);setModal(null);setNavOpen(false)};
- const delChat=async c=>{if(loggedIn&&uidRef.current){try{await window.__deleteChat(uidRef.current,c.id)}catch(e){console.error(e);return notify("Couldn't delete that chat. Try again.")}}
-  setChats(p=>p.filter(x=>x.id!==c.id));if(c.id===activeId){bump();setActiveId(null);setMsgs([])}};
- const askDelete=c=>ask({title:"Delete chat?",text:`"${c.title}" will be permanently deleted${loggedIn?" from your account":""}.`,ok:"Delete",danger:true,onOk:()=>delChat(c)});
- const toggleRec=()=>{if(!recRef.current)return notify("Voice input isn't available in this browser.");if(rec){recRef.current.stop();setRec(false)}else{try{recRef.current.start();setRec(true)}catch(e){}}};
- const prefill=t=>{setInput(t);inRef.current&&inRef.current.focus()};
- const track=(a,b,m,nc)=>setUsage(u=>{const t=tok(a)+tok(b);return{...u,messages:u.messages+1,chats:u.chats+(nc?1:0),tokens:u.tokens+t,spend:u.spend+t/1e6*(RATE[m]||.3),models:m?{...u.models,[m]:(u.models[m]||0)+1}:u.models}});
- const stop=()=>{abortRef.current&&abortRef.current.abort()};
-
- // hist = full conversation ending with the user message to answer
- const api=async(hist)=>{
-  const sid=sess.current,live=()=>sid===sess.current,uid0=uidRef.current,last=hist[hist.length-1],img=mode.includes("Image"),aid=rid();
-  const isNew=!temp&&activeId===null,cid=temp?null:(activeId!==null?activeId:Date.now());
-  if(isNew)setActiveId(cid);
-  const ctl=new AbortController();abortRef.current=ctl;setThinking(true);
-  let acc="";
-  const finish=reply=>{const upd=[...hist,{id:aid,sender:"ai",...reply}];
-   if(live())setMsgs(upd);
-   track(last.text,reply.text,img?null:model,isNew);
-   if(voiceMode&&live()&&reply.text)say(reply.text);
-   if(cid&&uidRef.current===uid0)setChats(p=>{const cur=p.find(c=>c.id===cid);return[{...(cur||{id:cid}),title:(cur&&cur.title)||mkTitle(hist),messages:upd,updated:Date.now()},...p.filter(c=>c.id!==cid)]})};
-  try{
-   let tk=null;try{tk=window.__token?await window.__token():null}catch(e){}
-   const headers={"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})};
-   let reply;
-   if(img){
-    const r=await fetch("/api/image",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({prompt:last.text})});
-    const raw=await r.text();let d={};try{d=JSON.parse(raw)}catch(e){}
-    const image=toImg(d);
-    if(!r.ok||!image)throw new Error(errMsg(d)||(r.ok?"The server replied without an image":"HTTP "+r.status+" "+raw.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,120)));
-    reply={text:d.text||"",image};
-   }else{
-    const memCtx=mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
-    const past=hist.slice(0,-1).filter(m=>!m.err&&m.text&&!m.text.startsWith("⚠️")).slice(-20).map(m=>({role:m.sender==="user"?"user":"assistant",content:toModel(m)}));
-    const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")},...past,{role:"user",content:toModel(last)}];
-    const r=await fetch("/api/chat",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({model,messages:payload,temperature:.7,max_tokens:MAXTOK,...(STREAM?{stream:true}:{})})});
-    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(errMsg(d)||"HTTP "+r.status)}
-    let fin="";
-    if(STREAM&&r.body&&(r.headers.get("content-type")||"").includes("text/event-stream")){
-     const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
-     for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split("\n");buf=lines.pop();
-      for(const ln of lines){const s=ln.trim();if(!s.startsWith("data:"))continue;const p=s.slice(5).trim();if(p==="[DONE]")continue;
-       try{const j=JSON.parse(p),ch=j.choices&&j.choices[0];if(ch&&ch.delta&&ch.delta.content){acc+=ch.delta.content;if(live())setMsgs([...hist,{id:aid,sender:"ai",text:acc}])}if(ch&&ch.finish_reason)fin=ch.finish_reason}catch(e){}}}
-     if(!acc)throw new Error("Empty response");
-    }else{
-     const d=await r.json(),c=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
-     if(!c)throw new Error(errMsg(d)||"Invalid response format");acc=c;fin=d.choices[0].finish_reason||"";
-    }
-    if(fin==="length")acc+="\n\n*(The reply hit the length limit. Ask me to continue.)*";
-    reply={text:acc};
-   }
-   finish(reply);
-  }catch(e){
-   if(e&&e.name==="AbortError"){if(acc)finish({text:acc+"\n\n*(Stopped)*"});return}
-   if(live())setMsgs([...hist,{id:aid,sender:"ai",err:true,text:img?`⚠️ Image generation failed: ${e.message}`:`⚠️ NivixAI is unavailable right now. Please try again. (${e.message})`}]);
-  }finally{if(live())setThinking(false)}};
-
- const clean=()=>msgs.filter(x=>!x.err);
- const send=async()=>{if(thinking)return;const txt=input.trim();if(!txt&&!file)return;
-  const m={id:rid(),sender:"user",text:txt||"Please read this file and summarize it.",...(file?{file:file.name,ctx:file.text}:{})},hist=[...clean(),m];
-  setMsgs(hist);setInput("");setFile(null);await api(hist)};
- const busy=()=>{if(thinking){notify("Wait for the current reply, or press Stop.");return true}return false};
- const retry=async m=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i<1)return;const tr=msgs.slice(0,i).filter(x=>!x.err);if(!tr.length||tr[tr.length-1].sender!=="user")return;setMsgs(tr);await api(tr)};
- const edit=async(m,t)=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i===-1)return;const tr=[...msgs.slice(0,i).filter(x=>!x.err),{...m,text:t,prompt:undefined}];setMsgs(tr);await api(tr)};
- const askEdit=m=>ask({title:"Edit message",input:true,multi:true,value:m.text,ok:"Save & resend",onOk:t=>{if(t&&t!==m.text)edit(m,t)}});
- const explain=async m=>{if(busy())return;const hist=[...clean(),{id:rid(),sender:"user",text:"Explain this answer in simpler terms.",prompt:"Explain this in simpler terms, step by step:\n\n"+m.text}];setMsgs(hist);await api(hist)};
-
- const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0],waiting=thinking&&msgs.length>0&&msgs[msgs.length-1].sender==="user";
- const cards=[...MODES.slice(0,4).map(m=>({k:m.id,label:m.label,desc:m.desc,icon:m.icon,on:mode===m.id,go:()=>setMode(m.id)})),{k:"w",label:"Write",desc:"Create & express",icon:"pen",go:()=>prefill("Draft an essay or email about ")},{k:"r",label:"Research",desc:"Find & explore",icon:"search",go:()=>prefill("Find detailed information on ")}];
- const tries=[["bulb","Explain this","Explain the concept of "],["clock","Make a plan","Make a plan for "],["pen","Write a note","Write a note about "],["search","Find resources","Find resources on "]];
- const nav=(ic,l,fn,on)=>h("button",{className:on?"on":"",onClick:()=>{fn();setNavOpen(false)}},Ic(ic,20),l);
-
- return h(React.Fragment,null,
-  h("canvas",{id:"fx",ref:fxRef}),hasBg&&h("div",{id:"bgl",key:customBg.length,style:{backgroundImage:`url(${customBg})`}}),
-  h("div",{className:"app"+(fx?" fx":"")},
-  h("input",{type:"file",ref:bgRef,style:{display:"none"},accept:"image/*",onChange:onBgFile}),
-  h("input",{type:"file",ref:fileRef,style:{display:"none"},accept:FILE_ACCEPT,onChange:onFile}),
-  h("div",{className:"top"},h("button",{className:"ib menu-btn","aria-label":"Open menu",onClick:()=>setNavOpen(true)},Ic("menu",22)),
-   
-  h("span",{className:"brand"},BRAND),
-   h("span",{className:"tag"},"Your AI. Your Rules."),temp&&h("span",{className:"off on"},"◉ Temp"),h("div",{className:"sp"}),
-   h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
-   h("button",{onClick:()=>setModal("acct"),title:"Account","aria-label":"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
-  h("div",{className:"main"},navOpen&&h("div",{className:"scrim",onClick:()=>setNavOpen(false)}),
-   h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
-    h("div",{className:"promo"},h("div",{className:"promoart",dangerouslySetInnerHTML:{__html:PROMO_SVG}}),h("span",null,"✦ Better questions.",h("br"),"Bigger possibilities."))),
-   h("div",{className:"center"},
-    h("div",{className:"scroll"},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
-      !temp&&h("div",{className:"modes"},cards.map(c=>h("button",{key:c.k,className:"mc"+(c.on?" on":""),onClick:c.go},h("span",null,Ic(c.icon,26)),h("b",null,c.label),h("small",null,c.desc)))))
-     :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
-    ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:"",onError:hideImg}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
-    h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
-      file&&h("div",{className:"file"},h("span",null,"📎 ",h("b",null,file.name)),h("button",{"aria-label":"Remove attachment",onClick:()=>setFile(null)},"×")),
-      h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
-      h("div",{className:"irow"},h("button",{className:"ib",title:"Attach a text or code file","aria-label":"Attach a text or code file",onClick:()=>fileRef.current&&fileRef.current.click()},Ic("clip")),h("div",{className:"sp"}),
-       h("button",{className:"ib",title:"Voice input","aria-label":"Voice input","aria-pressed":rec,style:{color:rec?"#ef4444":undefined},onClick:toggleRec},Ic("mic")),
-       h("div",{style:{position:"relative"},ref:popRef},h("button",{className:"ib",title:"Change mode","aria-label":"Change mode","aria-haspopup":"menu","aria-expanded":modeMenu,onClick:()=>setModeMenu(v=>!v),style:{color:"var(--ac2)"}},Ic("brain",20)),
-        modeMenu&&h("div",{className:"pop",role:"menu"},MODES.map(m=>h("button",{key:m.id,role:"menuitem",className:mode===m.id?"on":"",onClick:()=>{setMode(m.id);setModeMenu(false)}},m.id,h("small",null,m.desc))))),
-       h("button",{className:"off"+(temp?" on":""),title:"Temporary chat","aria-pressed":temp,onClick:()=>{setTemp(v=>!v);newChat()}},"◉ ",temp?"On":"Off"),
-       thinking?h("button",{className:"send",onClick:stop,title:"Stop","aria-label":"Stop generating"},Ic("stop",19)):h("button",{className:"send",onClick:send,title:"Send","aria-label":"Send message"},Ic("send",19)))),
-     empty&&!temp&&h("div",{className:"try"},"Try",tries.map(([ic,l,p])=>h("button",{key:l,className:"chip",onClick:()=>prefill(p)},Ic(ic,13),l)))),
-    h("div",{className:"foot"},`${BRAND} v1.1 • Powered by ${modelLabel}`)),
-   h("div",{className:"right"},
-    h("div",{className:"card"},h("div",{className:"h3"},"AI Status"),h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"#7be8b5",marginBottom:6}},h("span",{className:"dot"}),"All systems operational"),
-     [["brain","Model",modelLabel],["lock","Memory",mems.length+" saved"],["chat","Chats",loggedIn?"Synced":"Local"],["tool","Tools","Ready"]].map(([ic,k,v])=>h("div",{className:"row",key:k},h("div",{className:"ico"},Ic(ic,17)),h("span",{className:"k"},k),h("span",{className:"v"},v)))),
-    h("div",{className:"card"},h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",{className:"h3",style:{marginBottom:0}},"Recent Chats"),h("button",{style:{color:"var(--ac)",fontSize:13},onClick:()=>setModal("hist")},"View all")),
-     chats.length?chats.slice(0,5).map(c=>h("button",{key:c.id,className:"rc",onClick:()=>openChat(c)},h("div",{className:"ico"},Ic("chat",17)),h("div",null,h("div",{className:"t"},c.title),h("small",null,chatTime(c)))))
-      :h("div",{style:{color:"var(--sub)",fontSize:13,padding:"14px 0"}},loggedIn?"No chats saved yet.":"Sign in to save your chats.")),
-    h("div",{className:"quote"},"✦ “Small steps",h("br"),"build big things.”",h("div",{style:{color:"var(--nt)",fontSize:12,marginTop:6}},"— "+BRAND)))),
-
-  modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>setModal(null)},chats.length?chats.map(c=>h("div",{key:c.id,className:"hrow"},
-    h("button",{className:"rc",onClick:()=>openChat(c)},h("div",null,h("div",{className:"t",style:{maxWidth:330}},c.title),h("small",null,chatTime(c)))),
-    h("button",{className:"ib",title:"Delete chat","aria-label":"Delete chat "+c.title,onClick:()=>askDelete(c)},Ic("trash",16))))
-   :h("div",{style:{color:"var(--sub)",fontSize:13,textAlign:"center",padding:16}},loggedIn?"No chats saved yet.":"Sign in to sync and save your chat history.")),
-  modal==="mem"&&h(Modal,{title:"Memory Vault",onClose:()=>setModal(null)},!mems.length&&h("div",{style:{color:"var(--sub)",textAlign:"center",fontSize:13,marginBottom:10}},"Vault is empty. Add things you want NivixAI to remember about you."),
-   mems.map(m=>h("div",{key:m.id,className:"mem"},h("span",null,`“${m.text}”`),h("span",{style:{display:"flex",gap:6,flexShrink:0}},
-    h("button",{"aria-label":"Edit memory",onClick:()=>ask({title:"Edit memory",input:true,value:m.text,ok:"Save",onOk:t=>setMems(p=>p.map(x=>x.id===m.id?{...x,text:t}:x))})},"✎"),
-    h("button",{"aria-label":"Delete memory",style:{color:"#ef4444"},onClick:()=>setMems(p=>p.filter(x=>x.id!==m.id))},"×")))),
-   h("button",{className:"btn",onClick:()=>ask({title:"New memory",input:true,placeholder:"e.g. I prefer short answers",ok:"Add",onOk:t=>setMems(p=>[...p,{id:rid(),text:t}])})},"+ Add memory")),
-  modal==="acct"&&h(Modal,{title:loggedIn?"Account":"Sign in",onClose:()=>setModal(null)},authErr&&h("div",{className:"err",role:"alert"},authErr),
-   loggedIn?h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:600}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||"?")[0].toUpperCase()),maskEmail(email)),
-     h("button",{className:"btn red",onClick:()=>ask({title:"Sign out?",text:"Your chats stay saved in your account. New chats won't sync until you sign in again.",ok:"Sign out",danger:true,onOk:()=>window.__signOut().then(()=>setModal(null))})},"Sign out"))
-   :h("div",null,h("button",{className:"btn",onClick:()=>oauth("__signIn")},"Sign in with Google"),h("button",{className:"btn",onClick:()=>oauth("__signInGithub")},"Sign in with GitHub"))),
-  modal==="app"&&h(Modal,{title:"Appearance",onClose:()=>setModal(null)},h("div",{className:"lab",style:{marginTop:0}},"THEME"),
-   h("div",{className:"opts"},[["dark","Dark"],["light","Light"],["hacker","Hacker"]].map(([k,l])=>h("button",{key:k,className:"opt"+(theme===k?" on":""),"aria-pressed":theme===k,onClick:()=>setTheme(k)},l))),
-   hacker?h("div",{style:{fontSize:12,color:"var(--sub)",marginTop:14}},"Matrix rain is active. Wallpapers are available in the Dark and Light themes."):h("div",null,
-    h("div",{className:"lab"},"WALLPAPER"),h("div",{className:"opts"},[["none","None"],["custom","Your image"],["rain","Rainfall"]].map(([k,l])=>h("button",{key:k,className:"opt"+(bgMode===k?" on":""),"aria-pressed":bgMode===k,onClick:()=>{if(k==="custom"&&!customBg)bgRef.current&&bgRef.current.click();else setBgMode(k)}},l))),
-    bgMode==="custom"&&h("button",{className:"btn",onClick:()=>bgRef.current&&bgRef.current.click()},"Change image"),
-    h("div",{style:{fontSize:12,color:"var(--sub)",marginTop:12}},"Accent colours and glass tint adapt to your wallpaper automatically."))),
-  modal==="set"&&h(Modal,{title:"Control Center",onClose:()=>setModal(null)},
-   h("div",{className:"card",style:{padding:12,fontSize:13,lineHeight:1.5}},h("b",null,"About"),h("br"),BRAND+" is an independent project built by an anonymous team."),
-   h("div",{className:"lab"},"NICKNAME"),h("input",{className:"fld",value:nick,"aria-label":"Nickname",onChange:e=>{setNick(e.target.value);sv("nick",e.target.value)}}),
-   h("div",{className:"lab"},"MODEL"),h("select",{className:"fld","aria-label":"Model",value:model,onChange:e=>setModel(e.target.value)},MODELS.map(([v,l])=>h("option",{key:v,value:v},l))),
-   h("div",{className:"lab"},"SYSTEM PROMPT"),h("textarea",{className:"fld","aria-label":"System prompt",rows:4,style:{resize:"none"},value:sysPrompt,onChange:e=>setSysPrompt(e.target.value)}),
-   h("div",{className:"lab"},"USAGE"),
-   h("div",{className:"ug"},[[usage.messages,"MESSAGES"],[usage.chats,"CHATS"],[usage.days.length,"DAYS ACTIVE"],["$"+usage.spend.toFixed(4),"EST. SPEND"]].map(([v,k])=>h("div",{key:k,className:"us"},h("b",null,v),h("small",null,k))),
-    h("div",{className:"us w2"},h("b",null,usage.tokens.toLocaleString()),h("small",null,"EST. TOKENS")),h("div",{className:"us w2"},h("b",null,topModel?(MODELS.find(m=>m[0]===topModel[0])||[0,topModel[0]])[1]:"—"),h("small",null,"TOP MODEL"))),
-   h("button",{className:"lnk",onClick:()=>ask({title:"Reset usage counters?",text:"Messages, chats, tokens and spend estimates go back to zero.",ok:"Reset",danger:true,onOk:()=>setUsage({...U0,days:[new Date().toDateString()]})})},"Reset usage counters"),
-   h("div",{className:"lab"},"VOICE"),
-   h("select",{className:"fld","aria-label":"Voice",value:voiceName,onChange:e=>setVoiceName(e.target.value)},h("option",{value:""},"System default"),voices.map(v=>h("option",{key:v.name,value:v.name},`${v.name} (${v.lang})`))),
-   h("div",{className:"vm"},h("div",null,h("b",null,"Voice Mode"),h("small",null,"Auto-speak assistant replies.")),h("button",{className:"tg"+(voiceMode?" on":""),role:"switch","aria-checked":voiceMode,"aria-label":"Voice Mode",onClick:()=>setVoiceMode(v=>{if(v)window.speechSynthesis&&window.speechSynthesis.cancel();return!v})}))),
-  dlg&&h(Dialog,{d:dlg,key:dlg.title+(dlg.value||""),onClose:()=>setDlg(null)}),
-  toast&&h("div",{className:"toast",role:"status"},toast)));
-}
-ReactDOM.createRoot(document.getElementById("root")).render(h(App));
-</script></body></html>
+/* modals */
+.modal{border-radius:28px;padding:24px}
+.mh{font-family:var(--serif);font-size:22px;font-weight:600}
+.btn{border-radius:14px;padding:13px}
+</style>
