@@ -581,7 +581,7 @@ function App(){
  // persisted settings
  const[nick,setNick]=useState(()=>ls("nick","Chief")),[model,setModel]=useState(()=>{const m=ls("model","");return MODELS.some(x=>x[0]===m)?m:MODELS[0][0]}),[sysPrompt,setSysPrompt]=useState(()=>ls("sys",DEFAULT_SYS));
  const[mems,setMems]=useState(()=>{const a=lj("mems",[]);return Array.isArray(a)?a:[]});
- const[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false);
+ const[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false),[memEnabled,setMemEnabled]=useState(()=>ls("memEnabled","1")==="1"),[historyQuery,setHistoryQuery]=useState("");
  const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
  const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
  const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
@@ -603,6 +603,7 @@ function App(){
  useEffect(()=>{sv("model",model)},[model]);
  useEffect(()=>{sv("sys",sysPrompt)},[sysPrompt]);
  useEffect(()=>{sv("mems",JSON.stringify(mems))},[mems]);
+  useEffect(()=>{sv("memEnabled",memEnabled?"1":"0")},[memEnabled]);
  useEffect(()=>{const d=new Date().toDateString();setUsage(u=>u.days.includes(d)?u:{...u,days:[...u.days,d].slice(-365)})},[]);
  useEffect(()=>{endRef.current&&endRef.current.scrollIntoView({behavior:thinking?"auto":"smooth"})},[msgs,thinking]);
  useEffect(()=>{const el=inRef.current;if(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,160)+"px"}},[input]);
@@ -654,6 +655,7 @@ function App(){
  const delChat=async c=>{if(loggedIn&&uidRef.current){try{await window.__deleteChat(uidRef.current,c.id)}catch(e){console.error(e);return notify("Couldn't delete that chat. Try again.")}}
   setChats(p=>p.filter(x=>x.id!==c.id));if(c.id===activeId){bump();setActiveId(null);setMsgs([])}};
  const askDelete=c=>ask({title:"Delete chat?",text:`"${c.title}" will be permanently deleted${loggedIn?" from your account":""}.`,ok:"Delete",danger:true,onOk:()=>delChat(c)});
+  const askRename=c=>ask({title:"Rename chat",input:true,value:c.title||"",placeholder:"Chat name",ok:"Save",onOk:t=>{const title=t.slice(0,80);if(title)setChats(p=>p.map(x=>x.id===c.id?{...x,title,updated:Date.now()}:x))}});
  const toggleRec=()=>{if(!recRef.current)return notify("Voice input isn't available in this browser.");if(rec){recRef.current.stop();setRec(false)}else{try{recRef.current.start();setRec(true)}catch(e){}}};
  const prefill=t=>{setInput(t);inRef.current&&inRef.current.focus()};
  const track=(a,b,m,nc)=>setUsage(u=>{const t=tok(a)+tok(b);return{...u,messages:u.messages+1,chats:u.chats+(nc?1:0),tokens:u.tokens+t,spend:u.spend+t/1e6*(RATE[m]||.3),models:m?{...u.models,[m]:(u.models[m]||0)+1}:u.models}});
@@ -682,7 +684,7 @@ function App(){
     if(!r.ok||!image)throw new Error(errMsg(d)||(r.ok?"The server replied without an image":"HTTP "+r.status+" "+raw.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,120)));
     reply={text:d.text||"",image};
    }else{
-    const memCtx=mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
+    const memCtx=memEnabled&&!temp&&mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
     const past=hist.slice(0,-1).filter(m=>!m.err&&m.text&&!m.text.startsWith("⚠️")).slice(-20).map(m=>({role:m.sender==="user"?"user":"assistant",content:toModel(m)}));
     const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")},...past,{role:"user",content:toModel(last)}];
     const r=await fetch("/api/chat",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({model,messages:payload,temperature:.7,max_tokens:MAXTOK,...(STREAM?{stream:true}:{})})});
@@ -717,7 +719,7 @@ function App(){
  const askEdit=m=>ask({title:"Edit message",input:true,multi:true,value:m.text,ok:"Save & resend",onOk:t=>{if(t&&t!==m.text)edit(m,t)}});
  const explain=async m=>{if(busy())return;const hist=[...clean(),{id:rid(),sender:"user",text:"Explain this answer in simpler terms.",prompt:"Explain this in simpler terms, step by step:\n\n"+m.text}];setMsgs(hist);await api(hist)};
 
- const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0],waiting=thinking&&msgs.length>0&&msgs[msgs.length-1].sender==="user";
+ const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0],waiting=thinking&&msgs.length>0&&msgs[msgs.length-1].sender==="user",visibleChats=chats.filter(c=>(c.title||"").toLocaleLowerCase().includes(historyQuery.trim().toLocaleLowerCase()));
  const cards=[...MODES.slice(0,4).map(m=>({k:m.id,label:m.label,desc:m.desc,icon:m.icon,on:mode===m.id,go:()=>setMode(m.id)})),{k:"w",label:"Write",desc:"Create & express",icon:"pen",go:()=>prefill("Draft an essay or email about ")},{k:"r",label:"Research",desc:"Find & explore",icon:"search",go:()=>prefill("Find detailed information on ")}];
  const tries=[["bulb","Explain this","Explain the concept of "],["clock","Make a plan","Make a plan for "],["pen","Write a note","Write a note about "],["search","Find resources","Find resources on "]];
  const nav=(ic,l,fn,on)=>h("button",{className:on?"on":"",onClick:()=>{fn();setNavOpen(false)}},Ic(ic,20),l);
@@ -731,7 +733,7 @@ function App(){
    
   h("span",{className:"brand"},BRAND),
    h("span",{className:"tag"},"Your AI. Your Rules."),temp&&h("span",{className:"off on"},"◉ Temp"),h("div",{className:"sp"}),
-   h("div",{className:"pill"},h("span",{className:"dot"}),"Online"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
+   h("div",{className:"pill"},h("span",{className:"dot"}),"Chat ready"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
    h("button",{onClick:()=>setModal("acct"),title:"Account","aria-label":"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
   h("div",{className:"main"},navOpen&&h("div",{className:"scrim",onClick:()=>setNavOpen(false)}),
    h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
@@ -742,7 +744,7 @@ function App(){
      :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
     ncAnim&&h("div",{className:"nc",key:"nc"+chatKey},h("div",{className:"nc-orb"},h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-ring"}),h("span",{className:"nc-spin"}),h("div",{className:"nc-core"},Ic("plus",28),h("img",{className:"nc-logo",src:LOGO,alt:"",onError:hideImg}))),h("div",{className:"nc-txt"},"Starting new chat",h("span",{className:"nc-dots"},h("span",null,"."),h("span",null,"."),h("span",null,".")))),
     h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
-      file&&h("div",{className:"file"},h("span",null,"📎 ",h("b",null,file.name)),h("button",{"aria-label":"Remove attachment",onClick:()=>setFile(null)},"×")),
+      file&&h("div",{className:"file",role:"status"},h("span",null,"📎 ",h("b",null,file.name),h("small",{style:{display:"block",color:"var(--sub)",fontSize:10,marginLeft:20}},"Text content attached")),h("button",{"aria-label":"Remove attachment",title:"Remove attachment",onClick:()=>setFile(null)},"×")),
       h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
       h("div",{className:"irow"},h("button",{className:"ib",title:"Attach a text or code file","aria-label":"Attach a text or code file",onClick:()=>fileRef.current&&fileRef.current.click()},Ic("clip")),h("div",{className:"sp"}),
        h("button",{className:"ib",title:"Voice input","aria-label":"Voice input","aria-pressed":rec,style:{color:rec?"#ef4444":undefined},onClick:toggleRec},Ic("mic")),
@@ -750,20 +752,22 @@ function App(){
         modeMenu&&h("div",{className:"pop",role:"menu"},MODES.map(m=>h("button",{key:m.id,role:"menuitem",className:mode===m.id?"on":"",onClick:()=>{setMode(m.id);setModeMenu(false)}},m.id,h("small",null,m.desc))))),
        h("button",{className:"off"+(temp?" on":""),title:"Temporary chat","aria-pressed":temp,onClick:()=>{setTemp(v=>!v);newChat()}},"◉ ",temp?"On":"Off"),
        thinking?h("button",{className:"send",onClick:stop,title:"Stop","aria-label":"Stop generating"},Ic("stop",19)):h("button",{className:"send",onClick:send,title:"Send","aria-label":"Send message"},Ic("send",19)))),
-     empty&&!temp&&h("div",{className:"try"},"Try",tries.map(([ic,l,p])=>h("button",{key:l,className:"chip",onClick:()=>prefill(p)},Ic(ic,13),l)))),
+     temp&&h("div",{style:{width:"100%",maxWidth:760,fontSize:11,color:"#fca5a5",textAlign:"left"}},"Temporary chat · not synced and saved memories are not used"),empty&&!temp&&h("div",{className:"try"},"Try",tries.map(([ic,l,p])=>h("button",{key:l,className:"chip",onClick:()=>prefill(p)},Ic(ic,13),l)))),
     h("div",{className:"foot"},`${BRAND} v1.1 • Powered by ${modelLabel}`)),
    h("div",{className:"right"},
-    h("div",{className:"card"},h("div",{className:"h3"},"AI Status"),h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"#7be8b5",marginBottom:6}},h("span",{className:"dot"}),"All systems operational"),
-     [["brain","Model",modelLabel],["lock","Memory",mems.length+" saved"],["chat","Chats",loggedIn?"Synced":"Local"],["tool","Tools","Ready"]].map(([ic,k,v])=>h("div",{className:"row",key:k},h("div",{className:"ico"},Ic(ic,17)),h("span",{className:"k"},k),h("span",{className:"v"},v)))),
+    h("div",{className:"card"},h("div",{className:"h3"},"AI Status"),h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--nt)",marginBottom:6}},h("span",{className:"dot",style:{background:"var(--ac)",boxShadow:"none"}}),"Chat interface ready"),
+     [["brain","Model",modelLabel],["lock","Memory",temp?"Off in temp":mems.length?(memEnabled?"On":"Paused"):"None saved"],["chat","Chats",loggedIn?"Synced":"Local"],["tool","Service","Checked when sending"]].map(([ic,k,v])=>h("div",{className:"row",key:k},h("div",{className:"ico"},Ic(ic,17)),h("span",{className:"k"},k),h("span",{className:"v"},v)))),
     h("div",{className:"card"},h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},h("div",{className:"h3",style:{marginBottom:0}},"Recent Chats"),h("button",{style:{color:"var(--ac)",fontSize:13},onClick:()=>setModal("hist")},"View all")),
      chats.length?chats.slice(0,5).map(c=>h("button",{key:c.id,className:"rc",onClick:()=>openChat(c)},h("div",{className:"ico"},Ic("chat",17)),h("div",null,h("div",{className:"t"},c.title),h("small",null,chatTime(c)))))
       :h("div",{style:{color:"var(--sub)",fontSize:13,padding:"14px 0"}},loggedIn?"No chats saved yet.":"Sign in to save your chats.")),
     h("div",{className:"quote"},"✦ “Small steps",h("br"),"build big things.”",h("div",{style:{color:"var(--nt)",fontSize:12,marginTop:6}},"— "+BRAND)))),
 
-  modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>setModal(null)},chats.length?chats.map(c=>h("div",{key:c.id,className:"hrow"},
+  modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>{setModal(null);setHistoryQuery("")}},
+   h("input",{className:"fld",type:"search",value:historyQuery,"aria-label":"Search chats",placeholder:"Search chat titles…",onChange:e=>setHistoryQuery(e.target.value),style:{marginBottom:12}}),
+   visibleChats.length?visibleChats.map(c=>h("div",{key:c.id,className:"hrow"},
     h("button",{className:"rc",onClick:()=>openChat(c)},h("div",null,h("div",{className:"t",style:{maxWidth:330}},c.title),h("small",null,chatTime(c)))),
-    h("button",{className:"ib",title:"Delete chat","aria-label":"Delete chat "+c.title,onClick:()=>askDelete(c)},Ic("trash",16))))
-   :h("div",{style:{color:"var(--sub)",fontSize:13,textAlign:"center",padding:16}},loggedIn?"No chats saved yet.":"Sign in to sync and save your chat history.")),
+    h("button",{className:"ib",title:"Rename chat","aria-label":"Rename chat "+c.title,onClick:()=>askRename(c)},Ic("pen",16)),h("button",{className:"ib",title:"Delete chat","aria-label":"Delete chat "+c.title,onClick:()=>askDelete(c)},Ic("trash",16))))
+   :h("div",{style:{color:"var(--sub)",fontSize:13,textAlign:"center",padding:16}},historyQuery?"No chats match that search.":loggedIn?"No chats saved yet.":"Sign in to sync and save your chat history.")),
   modal==="mem"&&h(Modal,{title:"Memory Vault",onClose:()=>setModal(null)},!mems.length&&h("div",{style:{color:"var(--sub)",textAlign:"center",fontSize:13,marginBottom:10}},"Vault is empty. Add things you want NivixAI to remember about you."),
    mems.map(m=>h("div",{key:m.id,className:"mem"},h("span",null,`“${m.text}”`),h("span",{style:{display:"flex",gap:6,flexShrink:0}},
     h("button",{"aria-label":"Edit memory",onClick:()=>ask({title:"Edit memory",input:true,value:m.text,ok:"Save",onOk:t=>setMems(p=>p.map(x=>x.id===m.id?{...x,text:t}:x))})},"✎"),
@@ -784,6 +788,7 @@ function App(){
    h("div",{className:"lab"},"NICKNAME"),h("input",{className:"fld",value:nick,"aria-label":"Nickname",onChange:e=>{setNick(e.target.value);sv("nick",e.target.value)}}),
    h("div",{className:"lab"},"MODEL"),h("select",{className:"fld","aria-label":"Model",value:model,onChange:e=>setModel(e.target.value)},MODELS.map(([v,l])=>h("option",{key:v,value:v},l))),
    h("div",{className:"lab"},"SYSTEM PROMPT"),h("textarea",{className:"fld","aria-label":"System prompt",rows:4,style:{resize:"none"},value:sysPrompt,onChange:e=>setSysPrompt(e.target.value)}),
+   h("div",{className:"vm",style:{marginTop:14}},h("div",null,h("b",null,"Use saved memories"),h("small",null,temp?"Temporary chats never use saved memories.":mems.length?(memEnabled?"Saved memories may personalize replies.":"Saved memories are paused."):"Add items in Memory Vault to personalize replies.")),h("button",{className:"tg"+(memEnabled&&!temp?" on":""),role:"switch","aria-checked":memEnabled&&!temp,"aria-label":"Use saved memories",disabled:temp,onClick:()=>setMemEnabled(v=>!v)})),
    h("div",{className:"lab"},"USAGE"),
    h("div",{className:"ug"},[[usage.messages,"MESSAGES"],[usage.chats,"CHATS"],[usage.days.length,"DAYS ACTIVE"],["$"+usage.spend.toFixed(4),"EST. SPEND"]].map(([v,k])=>h("div",{key:k,className:"us"},h("b",null,v),h("small",null,k))),
     h("div",{className:"us w2"},h("b",null,usage.tokens.toLocaleString()),h("small",null,"EST. TOKENS")),h("div",{className:"us w2"},h("b",null,topModel?(MODELS.find(m=>m[0]===topModel[0])||[0,topModel[0]])[1]:"—"),h("small",null,"TOP MODEL"))),
