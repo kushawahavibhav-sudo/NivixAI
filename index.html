@@ -484,6 +484,23 @@ help:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M1
 trash:"M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 11v5 M14 11v5",
 stop:"M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"};
 const Ic=(n,s=18)=>h("svg",{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.6,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"},h("path",{d:P[n]}));
+P.wand="M15 4V2 M15 16v-2 M8 9h2 M20 9h2 M17.8 11.8 19 13 M17.8 6.2 19 5 M3 21l9-9 M12.2 6.2 11 5";
+const TONES={"Default":"","Casual":"Use a relaxed, friendly tone.","Formal":"Use a formal, professional tone.","Brutally honest":"Be blunt and direct. Point out flaws and weak assumptions plainly, but stay respectful.","Socratic":"Guide with probing questions before giving the answer, then confirm understanding."};
+const LENS={"Short":"Keep replies short, under about 80 words, unless asked for more.","Balanced":"","Detailed":"Give thorough, well-structured answers with examples."};
+const styleDirective=s=>{const t=[TONES[s.tone],LENS[s.len]].filter(Boolean).join(" ");return t?`\n\n[STYLE: ${t}]`:""};
+
+function Palette({items,onClose}){
+ const[q,setQ]=useState(""),[i,setI]=useState(0);
+ const list=items.filter(c=>c.label.toLowerCase().includes(q.trim().toLowerCase())).slice(0,9);
+ const run=c=>{onClose();c.run()};
+ return h(Modal,{title:"Quick actions",onClose},
+  h("input",{className:"fld",autoFocus:true,value:q,placeholder:"Type a command or a chat title…","aria-label":"Search commands",
+   onChange:e=>{setQ(e.target.value);setI(0)},
+   onKeyDown:e=>{if(e.key==="ArrowDown"){e.preventDefault();setI(x=>Math.min(x+1,list.length-1))}else if(e.key==="ArrowUp"){e.preventDefault();setI(x=>Math.max(x-1,0))}else if(e.key==="Enter"&&list[i]){e.preventDefault();run(list[i])}}}),
+  h("div",{style:{marginTop:10}},list.length?list.map((c,n)=>h("button",{key:c.label,onClick:()=>run(c),onMouseEnter:()=>setI(n),
+   style:{display:"block",width:"100%",textAlign:"left",padding:"10px 12px",borderRadius:10,fontSize:14,background:n===i?"rgba(var(--acr),.18)":"transparent"}},c.label))
+   :h("div",{style:{color:"var(--sub)",fontSize:13,padding:12,textAlign:"center"}},"Nothing matches that.")));
+}
 
 const PROMO_SVG=`<svg viewBox="0 0 240 400" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--s1,#140f45)"/><stop offset=".45" style="stop-color:var(--s2,#5b3a9e)"/><stop offset=".72" style="stop-color:var(--s3,#e0768f)"/><stop offset="1" style="stop-color:var(--s4,#ffb26b)"/></linearGradient><radialGradient id="pSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff2c9"/><stop offset=".45" stop-color="#ffc77a" stop-opacity=".85"/><stop offset="1" stop-color="#ff9a6b" stop-opacity="0"/></radialGradient><linearGradient id="pRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--m5,#2b2260)"/><stop offset="1" style="stop-color:var(--m6,#150f38)"/></linearGradient><radialGradient id="pLamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><rect width="240" height="400" fill="url(#pSky)"/><g fill="#fff"><circle cx="30" cy="30" r="1"/><circle cx="70" cy="14" r="1.2"/><circle cx="120" cy="38" r=".9"/><circle cx="170" cy="18" r="1.1"/><circle cx="210" cy="44" r="1"/><circle cx="200" cy="90" r=".8"/><circle cx="50" cy="80" r=".8"/><circle cx="140" cy="70" r=".7"/></g><circle cx="165" cy="268" r="62" fill="url(#pSun)"/><circle cx="165" cy="270" r="22" style="fill:var(--sun,#ffe2a8)"/><polygon points="0,300 0,262 38,236 70,264 112,222 150,270 190,246 240,282 240,300" style="fill:var(--m1,#4a3290)"/><polygon points="0,320 0,286 30,270 66,292 104,262 146,294 188,274 240,300 240,320" style="fill:var(--m2,#2e2070)"/><g style="fill:var(--m3,#1a1245)"><polygon points="8,318 14,288 20,318"/><polygon points="18,320 25,280 32,320"/><polygon points="30,318 36,292 42,318"/><polygon points="206,320 212,290 218,320"/><polygon points="218,320 225,284 232,320"/></g><rect y="316" width="240" height="40" style="fill:var(--m4,#1d1448)"/><polygon points="0,350 240,350 240,400 0,400" fill="url(#pRoad)"/><line x1="0" y1="384" x2="240" y2="384" stroke="#e5d6ff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="12 9"/><ellipse cx="172" cy="368" rx="52" ry="5" fill="#000" opacity=".35"/><ellipse cx="84" cy="364" rx="16" ry="3" fill="#000" opacity=".35"/><path d="M126 360 L126 348 Q126 343 132 342 L150 339 L160 326 Q163 323 168 323 L194 323 Q199 323 202 327 L210 339 L216 342 Q221 343 221 348 L221 360 Z" fill="#0d0a2a"/><polygon points="163,338 170,328 186,328 186,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><polygon points="190,338 190,328 197,328 205,338" style="fill:var(--m7,#8e7bd8)" opacity=".75"/><circle cx="146" cy="361" r="8.5" fill="#05040f"/><circle cx="146" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="201" cy="361" r="8.5" fill="#05040f"/><circle cx="201" cy="361" r="3.2" style="fill:var(--m8,#4c4688)"/><circle cx="128" cy="349" r="10" fill="url(#pLamp)"/><circle cx="128" cy="349" r="2.4" fill="#ffe9b8"/><g stroke="#0a0820" stroke-linecap="round" stroke-linejoin="round" fill="none"><line x1="82" y1="342" x2="75" y2="363" stroke-width="4.6"/><line x1="82" y1="342" x2="92" y2="362" stroke-width="4.6"/><line x1="82" y1="324" x2="82" y2="343" stroke-width="9.5"/><line x1="82" y1="327" x2="75" y2="339" stroke-width="3.6"/><polyline points="83,327 92,335 98,331" stroke-width="3.6"/></g><circle cx="82" cy="316" r="5.8" fill="#0a0820"/><path d="M95 324 L102.5 324 L101.4 333 L96.1 333 Z" fill="#f6ead2"/><rect x="94.6" y="323" width="8.3" height="1.8" rx=".9" fill="#d9c7a4"/><path d="M97 320 q-2.2 -3 0 -5.5 M100.5 320 q-2.2 -3 0 -5.5" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`;
 
@@ -498,8 +515,8 @@ function useFx(kind,ref){useEffect(()=>{const cv=ref.current;if(!cv)return;cv.st
 const MODES=[{id:"⚡ Nix",label:"Nix",desc:"Fast & helpful",icon:"bolt"},{id:"🧠 Deep",label:"Think",desc:"Deep analysis",icon:"brain"},{id:"📚 Study",label:"Study",desc:"Step-by-step",icon:"book"},{id:"💻 Dev",label:"Dev",desc:"Code & build",icon:"code"},{id:"📷 Image",label:"Image",desc:"Image generation",icon:"image"}];
 const DIRECTIVES={"🧠 Deep":"\n\n[SYSTEM DIRECTIVE: Deep Mode Active. Think through the problem step-by-step and give a detailed, comprehensive analysis.]","📚 Study":"\n\n[SYSTEM DIRECTIVE: Study Mode Active. Act as a patient tutor and explain step-by-step.]","💻 Dev":"\n\n[SYSTEM DIRECTIVE: Dev Mode Active. You are an expert developer. Give clean, working, efficient code.]"};
 // Keep in sync with the model whitelist on your server.
-const MODELS=[["openai/gpt-oss-20b","GPT-OSS 20B"],["meta-llama/llama-prompt-guard-2-22m","Llama Prompt Guard 2 22M"],["qwen/qwen3.8-27b","Qwen3.8 27B"]];
-const RATE={"openai/gpt-oss-20b":.15,"meta-llama/llama-prompt-guard-2-22m":.05,"qwen/qwen3.8-27b":.25};
+const MODELS=[["openai/gpt-oss-20b","GPT-OSS 20B"],["qwen/qwen3.8-27b","Qwen3.8 27B"]];
+const RATE={"openai/gpt-oss-20b":.15,"qwen/qwen3.8-27b":.25};
 const U0={messages:0,chats:0,tokens:0,spend:0,days:[],models:{}},tok=s=>Math.ceil((s||"").length/4);
 const FILE_ACCEPT=".txt,.md,.json,.csv,.tsv,.log,.js,.jsx,.ts,.tsx,.py,.html,.css,.java,.c,.cpp,.h,.go,.rs,.rb,.php,.sh,.yml,.yaml,.xml,.sql,.toml,.ini,text/*";
 
@@ -582,6 +599,9 @@ function App(){
  const[nick,setNick]=useState(()=>ls("nick","Chief")),[model,setModel]=useState(()=>{const m=ls("model","");return MODELS.some(x=>x[0]===m)?m:MODELS[0][0]}),[sysPrompt,setSysPrompt]=useState(()=>ls("sys",DEFAULT_SYS));
  const[mems,setMems]=useState(()=>{const a=lj("mems",[]);return Array.isArray(a)?a:[]});
  const[mode,setMode]=useState("⚡ Nix"),[temp,setTemp]=useState(false),[memEnabled,setMemEnabled]=useState(()=>ls("memEnabled","1")==="1"),[historyQuery,setHistoryQuery]=useState("");
+ const[style,setStyle]=useState(()=>({tone:ls("tone","Default"),len:ls("len","Balanced")}));
+ useEffect(()=>{sv("tone",style.tone);sv("len",style.len)},[style]);
+ useEffect(()=>{const k=e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setModal(m=>m==="cmd"?null:"cmd")}};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[]);
  const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
  const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
  const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
@@ -658,6 +678,12 @@ function App(){
   const askRename=c=>ask({title:"Rename chat",input:true,value:c.title||"",placeholder:"Chat name",ok:"Save",onOk:t=>{const title=t.slice(0,80);if(title)setChats(p=>p.map(x=>x.id===c.id?{...x,title,updated:Date.now()}:x))}});
  const toggleRec=()=>{if(!recRef.current)return notify("Voice input isn't available in this browser.");if(rec){recRef.current.stop();setRec(false)}else{try{recRef.current.start();setRec(true)}catch(e){}}};
  const prefill=t=>{setInput(t);inRef.current&&inRef.current.focus()};
+ const polish=async()=>{const t=input.trim();if(!t)return notify("Type a prompt first.");notify("Polishing your prompt…");
+  try{let tk=null;try{tk=window.__token?await window.__token():null}catch(e){}
+   const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})},body:JSON.stringify({model,temperature:.4,max_tokens:400,messages:[{role:"system",content:"Rewrite the user's message as a clearer, more specific prompt for an AI assistant. Keep their intent and language. Reply with only the rewritten prompt."},{role:"user",content:t}]})});
+   const d=await r.json(),c=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
+   if(!r.ok||!c)throw new Error(errMsg(d)||"No response");setInput(c.trim())}
+  catch(e){notify("Couldn't polish that: "+e.message)}};
  const track=(a,b,m,nc)=>setUsage(u=>{const t=tok(a)+tok(b);return{...u,messages:u.messages+1,chats:u.chats+(nc?1:0),tokens:u.tokens+t,spend:u.spend+t/1e6*(RATE[m]||.3),models:m?{...u.models,[m]:(u.models[m]||0)+1}:u.models}});
  const stop=()=>{abortRef.current&&abortRef.current.abort()};
 
@@ -686,7 +712,7 @@ function App(){
    }else{
     const memCtx=memEnabled&&!temp&&mems.length?"\n\nThings to remember about the user:\n"+mems.map(m=>"- "+m.text).join("\n"):"";
     const past=hist.slice(0,-1).filter(m=>!m.err&&m.text&&!m.text.startsWith("⚠️")).slice(-20).map(m=>({role:m.sender==="user"?"user":"assistant",content:toModel(m)}));
-    const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")},...past,{role:"user",content:toModel(last)}];
+    const payload=[{role:"system",content:sysPrompt+memCtx+(DIRECTIVES[mode]||"")+styleDirective(style)},...past,{role:"user",content:toModel(last)}];
     const r=await fetch("/api/chat",{method:"POST",headers,signal:ctl.signal,body:JSON.stringify({model,messages:payload,temperature:.7,max_tokens:MAXTOK,...(STREAM?{stream:true}:{})})});
     if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(errMsg(d)||"HTTP "+r.status)}
     let fin="";
@@ -719,6 +745,19 @@ function App(){
  const askEdit=m=>ask({title:"Edit message",input:true,multi:true,value:m.text,ok:"Save & resend",onOk:t=>{if(t&&t!==m.text)edit(m,t)}});
  const explain=async m=>{if(busy())return;const hist=[...clean(),{id:rid(),sender:"user",text:"Explain this answer in simpler terms.",prompt:"Explain this in simpler terms, step by step:\n\n"+m.text}];setMsgs(hist);await api(hist)};
 
+ const cmds=[
+  {label:"New chat",run:newChat},
+  {label:"Toggle temporary chat",run:()=>{setTemp(v=>!v);newChat()}},
+  {label:"Open history",run:()=>setModal("hist")},
+  {label:"Memory Vault",run:()=>setModal("mem")},
+  {label:"Appearance",run:()=>setModal("app")},
+  {label:"Control Center",run:()=>setModal("set")},
+  {label:"Export chat",run:exportChat},
+  {label:"Theme: Dark",run:()=>setTheme("dark")},{label:"Theme: Light",run:()=>setTheme("light")},
+  ...MODES.map(m=>({label:"Mode: "+m.label,run:()=>setMode(m.id)})),
+  ...Object.keys(TONES).map(t=>({label:"Tone: "+t,run:()=>setStyle(s=>({...s,tone:t}))})),
+  ...Object.keys(LENS).map(l=>({label:"Length: "+l,run:()=>setStyle(s=>({...s,len:l}))})),
+  ...chats.slice(0,30).map(c=>({label:"Chat: "+(c.title||"Untitled"),run:()=>openChat(c)}))];
  const empty=!msgs.length&&!thinking,topModel=Object.entries(usage.models).sort((a,b)=>b[1]-a[1])[0],waiting=thinking&&msgs.length>0&&msgs[msgs.length-1].sender==="user",visibleChats=chats.filter(c=>(c.title||"").toLocaleLowerCase().includes(historyQuery.trim().toLocaleLowerCase()));
  const cards=[...MODES.slice(0,4).map(m=>({k:m.id,label:m.label,desc:m.desc,icon:m.icon,on:mode===m.id,go:()=>setMode(m.id)})),{k:"w",label:"Write",desc:"Create & express",icon:"pen",go:()=>prefill("Draft an essay or email about ")},{k:"r",label:"Research",desc:"Find & explore",icon:"search",go:()=>prefill("Find detailed information on ")}];
  const tries=[["bulb","Explain this","Explain the concept of "],["clock","Make a plan","Make a plan for "],["pen","Write a note","Write a note about "],["search","Find resources","Find resources on "]];
@@ -736,7 +775,7 @@ function App(){
    h("div",{className:"pill"},h("span",{className:"dot"}),"Chat ready"),h("button",{className:"ib",title:"Control Center","aria-label":"Control Center",onClick:()=>setModal("set")},Ic("sliders",20)),
    h("button",{onClick:()=>setModal("acct"),title:"Account","aria-label":"Account",style:{display:"flex"}},photo?h("img",{className:"av",src:photo,referrerPolicy:"no-referrer",alt:""}):h("div",{className:"av"},(email||realName||"?")[0].toUpperCase()))),
   h("div",{className:"main"},navOpen&&h("div",{className:"scrim",onClick:()=>setNavOpen(false)}),
-   h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
+   h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("clock","History",()=>setModal("hist")),nav("search","Quick Actions",()=>setModal("cmd")),nav("sun","Appearance",()=>setModal("app")),nav("download","Export Chat",exportChat)),
     h("div",{className:"promo"},h("div",{className:"promoart",dangerouslySetInnerHTML:{__html:PROMO_SVG}}),h("span",null,"✦ Better questions.",h("br"),"Bigger possibilities."))),
    h("div",{className:"center"},
     h("div",{className:"scroll"+(empty?" home":"")},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
@@ -746,7 +785,7 @@ function App(){
     h("div",{className:"inwrap"},h("div",{className:"ibox"+(temp?" temp":"")},
       file&&h("div",{className:"file",role:"status"},h("span",null,"📎 ",h("b",null,file.name),h("small",{style:{display:"block",color:"var(--sub)",fontSize:10,marginLeft:20}},"Text content attached")),h("button",{"aria-label":"Remove attachment",title:"Remove attachment",onClick:()=>setFile(null)},"×")),
       h("textarea",{className:"t",ref:inRef,rows:1,value:input,"aria-label":"Message",placeholder:`Message ${BRAND} (${mode.split(" ")[1]})...`,onChange:e=>setInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}),
-      h("div",{className:"irow"},h("button",{className:"ib",title:"Attach a text or code file","aria-label":"Attach a text or code file",onClick:()=>fileRef.current&&fileRef.current.click()},Ic("clip")),h("div",{className:"sp"}),
+      h("div",{className:"irow"},h("button",{className:"ib",title:"Attach a text or code file","aria-label":"Attach a text or code file",onClick:()=>fileRef.current&&fileRef.current.click()},Ic("clip")),h("button",{className:"ib",title:"Polish prompt","aria-label":"Polish prompt",onClick:polish},Ic("wand",20)),h("div",{className:"sp"}),
        h("button",{className:"ib",title:"Voice input","aria-label":"Voice input","aria-pressed":rec,style:{color:rec?"#ef4444":undefined},onClick:toggleRec},Ic("mic")),
        h("div",{style:{position:"relative"},ref:popRef},h("button",{className:"ib",title:"Change mode","aria-label":"Change mode","aria-haspopup":"menu","aria-expanded":modeMenu,onClick:()=>setModeMenu(v=>!v),style:{color:"var(--ac2)"}},Ic("brain",20)),
         modeMenu&&h("div",{className:"pop",role:"menu"},MODES.map(m=>h("button",{key:m.id,role:"menuitem",className:mode===m.id?"on":"",onClick:()=>{setMode(m.id);setModeMenu(false)}},m.id,h("small",null,m.desc))))),
@@ -762,6 +801,7 @@ function App(){
       :h("div",{style:{color:"var(--sub)",fontSize:13,padding:"14px 0"}},loggedIn?"No chats saved yet.":"Sign in to save your chats.")),
     h("div",{className:"quote"},"✦ “Small steps",h("br"),"build big things.”",h("div",{style:{color:"var(--nt)",fontSize:12,marginTop:6}},"— "+BRAND)))),
 
+  modal==="cmd"&&h(Palette,{items:cmds,onClose:()=>setModal(null)}),
   modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>{setModal(null);setHistoryQuery("")}},
    h("input",{className:"fld",type:"search",value:historyQuery,"aria-label":"Search chats",placeholder:"Search chat titles…",onChange:e=>setHistoryQuery(e.target.value),style:{marginBottom:12}}),
    visibleChats.length?visibleChats.map(c=>h("div",{key:c.id,className:"hrow"},
@@ -786,6 +826,8 @@ function App(){
   modal==="set"&&h(Modal,{title:"Control Center",onClose:()=>setModal(null)},
    h("div",{className:"card",style:{padding:12,fontSize:13,lineHeight:1.5}},h("b",null,"About"),h("br"),BRAND+" is an independent project built by an anonymous team."),
    h("div",{className:"lab"},"NICKNAME"),h("input",{className:"fld",value:nick,"aria-label":"Nickname",onChange:e=>{setNick(e.target.value);sv("nick",e.target.value)}}),
+   h("div",{className:"lab"},"TONE"),h("div",{className:"opts",style:{flexWrap:"wrap"}},Object.keys(TONES).map(t=>h("button",{key:t,className:"opt"+(style.tone===t?" on":""),"aria-pressed":style.tone===t,onClick:()=>setStyle({...style,tone:t})},t))),
+   h("div",{className:"lab"},"REPLY LENGTH"),h("div",{className:"opts"},Object.keys(LENS).map(l=>h("button",{key:l,className:"opt"+(style.len===l?" on":""),"aria-pressed":style.len===l,onClick:()=>setStyle({...style,len:l})},l))),
    h("div",{className:"lab"},"MODEL"),h("select",{className:"fld","aria-label":"Model",value:model,onChange:e=>setModel(e.target.value)},MODELS.map(([v,l])=>h("option",{key:v,value:v},l))),
    h("div",{className:"lab"},"SYSTEM PROMPT"),h("textarea",{className:"fld","aria-label":"System prompt",rows:4,style:{resize:"none"},value:sysPrompt,onChange:e=>setSysPrompt(e.target.value)}),
    h("div",{className:"vm",style:{marginTop:14}},h("div",null,h("b",null,"Use saved memories"),h("small",null,temp?"Temporary chats never use saved memories.":mems.length?(memEnabled?"Saved memories may personalize replies.":"Saved memories are paused."):"Add items in Memory Vault to personalize replies.")),h("button",{className:"tg"+(memEnabled&&!temp?" on":""),role:"switch","aria-checked":memEnabled&&!temp,"aria-label":"Use saved memories",disabled:temp,onClick:()=>setMemEnabled(v=>!v)})),
