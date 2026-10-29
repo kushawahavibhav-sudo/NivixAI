@@ -640,11 +640,11 @@ function App(){
  useEffect(()=>{const k=e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setModal(m=>m==="cmd"?null:"cmd")}};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[]);
  const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
  const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
- const[room,setRoom]=useState(null),CID=
+ const[room,setRoom]=useState(null),CID=useRef(rid()).current; // CID: stable per-tab client id so we ignore our own live-room writes
  const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
  const[usage,setUsage]=useState(()=>{try{return{...U0,...JSON.parse(ls("usage","{}"))}}catch(e){return U0}});
  const[voices,setVoices]=useState([]),[voiceName,setVoiceName]=useState(()=>ls("voice","")),[voiceMode,setVoiceMode]=useState(()=>ls("voiceMode","0")==="1");
- const fxRef=useRef(null),uidRef=useRef(null),endRef=useRef(null),fileRef=useRef(null),bgRef=useRef(null),inRef=useRef(null),recRef=useRef(null),popRef=useRef(null),ncT=useRef(null),toastT=useRef(null);
+ const fxRef=useRef(null),uidRef=useRef(null),endRef=useRef(null),fileRef=useRef(null),bgRef=useRef(null),inRef=useRef(null),recRef=useRef(null),popRef=useRef(null),ncT=useRef(null),toastT=useRef(null),thRef=useRef(false);
  const sess=useRef(0),abortRef=useRef(null); // sess changes whenever the visible chat changes, so late replies never land in the wrong chat
  const hacker=theme==="hacker",hasBg=bgMode==="custom"&&!!customBg&&!hacker,fxKind=hacker?"matrix":bgMode==="rain"?"rain":null,fx=hasBg||!!fxKind,modelLabel=(MODELS.find(m=>m[0]===model)||[0,model])[1],hr=new Date().getHours(),greet=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
  const chatTime=c=>c.id===activeId?"Just now":ago(c.updated||c.id);
