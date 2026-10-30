@@ -604,28 +604,69 @@ function Dialog({d,onClose}){
 // Two Nix personas argue, you judge, then an AI judge scores both sides
 function Debate({model,onClose}){
  const[topic,setTopic]=useState(""),[log,setLog]=useState([]),[busy,setBusy]=useState(false),[vote,setVote]=useState(null),[res,setRes]=useState(null),[err,setErr]=useState("");
- const call=async(system,user,max)=>{let tk=null;try{tk=window.__token?await window.__token():null}catch(e){}
-  const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})},body:JSON.stringify({model,temperature:.8,max_tokens:max,messages:[{role:"system",content:system},{role:"user",content:user}]})});
-  const d=await r.json(),c=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
-  if(!r.ok||!c)throw new Error(errMsg(d)||"No response");return c.trim()};
- const run=async()=>{if(!topic.trim()||busy)return;setBusy(true);setErr("");setLog([]);setVote(null);setRes(null);let L=[];
-  try{for(let i=0;i<6;i++){const pro=i%2===0,who=pro?"Nix Pro":"Nix Con",tx=L.map(x=>x.who+": "+x.text).join("\n\n");
-   const t=await call("You are "+who+", a sharp debater arguing "+(pro?"FOR":"AGAINST")+" the motion. Reply in one paragraph under 90 words, no headings. "+(i<2?"Give your opening argument.":"Rebut the opponent's last point directly, then strengthen your case."),"Motion: "+topic+"\n\nDebate so far:\n"+(tx||"(nothing yet)"),300);
-   L=[...L,{who,pro,text:t}];setLog(L)}}catch(e){setErr(e.message)}
+ const ctl=useRef(null);
+ useEffect(()=>()=>{ctl.current&&ctl.current.abort()},[]); // stop requests if the modal closes
+
+ // Reasoning models spend tokens "thinking" first, so give them headroom and retry once with more if the answer comes back empty
+ const call=async(system,user,max)=>{
+  let tk=null;try{tk=window.__token?await window.__token():null}catch(e){}
+  let lim=max,last="";
+  for(let attempt=0;attempt<2;attempt++){
+   const r=await fetch("/api/chat",{method:"POST",signal:ctl.current&&ctl.current.signal,
+    headers:{"Content-Type":"application/json",...(tk?{Authorization:"Bearer "+tk}:{})},
+    body:JSON.stringify({model,temperature:.8,max_tokens:lim,
+     ...(model.includes("gpt-oss")?{reasoning_effort:"low"}:{}),
+     messages:[{role:"system",content:system},{role:"user",content:user}]})});
+   const d=await r.json().catch(()=>({}));
+   if(!r.ok)throw new Error(errMsg(d)||"HTTP "+r.status);
+   const ch=d.choices&&d.choices[0];
+   // strip <think>...</think> blocks that some models include in the content
+   const c=((ch&&ch.message&&ch.message.content)||"").replace(/<think>[\s\S]*?<\/think>/g,"").trim();
+   if(c)return c;
+   last=ch&&ch.finish_reason==="length"?"The model ran out of tokens while thinking":"The model returned an empty reply";
+   lim=Math.min(lim*2,4000); // retry with a bigger budget
+  }
+  throw new Error(last)};
+
+ const run=async()=>{
+  if(!topic.trim()||busy)return;
+  ctl.current&&ctl.current.abort();ctl.current=new AbortController();
+  setBusy(true);setErr("");setLog([]);setVote(null);setRes(null);
+  let L=[];
+  try{
+   for(let i=0;i<6;i++){
+    const pro=i%2===0,who=pro?"Nix Pro":"Nix Con",tx=L.map(x=>x.who+": "+x.text).join("\n\n");
+    const t=await call(
+     "You are "+who+", a sharp debater arguing "+(pro?"FOR":"AGAINST")+" the motion. Reply in one paragraph under 90 words, no headings. "+(i<2?"Give your opening argument.":"Rebut the opponent's last point directly, then strengthen your case."),
+     "Motion: "+topic+"\n\nDebate so far:\n"+(tx||"(nothing yet)"),1500);
+    L=[...L,{who,pro,text:t}];setLog(L);
+   }
+  }catch(e){if(e.name!=="AbortError")setErr(e.message)}
   setBusy(false)};
- const judge=async v=>{setVote(v);setBusy(true);setErr("");
-  try{const tx=log.map(x=>x.who+": "+x.text).join("\n\n"),
-   raw=await call('You are an impartial debate judge. Score each side 0-10 for logic, evidence and rebuttal. Reply with ONLY JSON: {"pro":7,"con":5,"winner":"pro","why":"one or two sentences"}. winner is pro, con or tie.',"Motion: "+topic+"\n\n"+tx,300),m=raw.match(/\{[\s\S]*\}/);
-   if(!m)throw new Error("Bad judge reply");setRes(JSON.parse(m[0]))}catch(e){setErr("Judge failed: "+e.message)}
+
+ const judge=async v=>{
+  setVote(v);setBusy(true);setErr("");
+  try{
+   const tx=log.map(x=>x.who+": "+x.text).join("\n\n"),
+    raw=await call('You are an impartial debate judge. Score each side 0-10 for logic, evidence and rebuttal. Reply with ONLY JSON: {"pro":7,"con":5,"winner":"pro","why":"one or two sentences"}. winner is pro, con or tie.',"Motion: "+topic+"\n\n"+tx,1500),
+    m=raw.match(/\{[\s\S]*\}/);
+   if(!m)throw new Error("Bad judge reply");
+   const j=JSON.parse(m[0]);
+   if(!["pro","con","tie"].includes(j.winner))j.winner=j.pro>j.con?"pro":j.con>j.pro?"con":"tie";
+   setRes(j);
+  }catch(e){if(e.name!=="AbortError")setErr("Judge failed: "+e.message)}
   setBusy(false)};
+
  const nm=w=>w==="tie"?"Tie":w==="pro"?"Nix Pro":"Nix Con";
  return h(Modal,{title:"AI Debate Arena",onClose},
   h("input",{className:"fld",autoFocus:true,value:topic,disabled:busy,placeholder:"Motion, e.g. Homework should be banned",onChange:e=>setTopic(e.target.value),onKeyDown:e=>{if(e.key==="Enter")run()}}),
-  h("button",{className:"btn",disabled:busy||!topic.trim(),onClick:run},busy&&log.length<6?"Debating…":log.length?"New debate":"Start debate"),
+  h("button",{className:"btn",disabled:busy||!topic.trim(),onClick:run},busy&&!vote?"Debating…":log.length?"New debate":"Start debate"),
   err&&h("div",{className:"err",style:{marginTop:8}},err),
   log.map((x,i)=>h("div",{key:i,className:"mem",style:{flexDirection:"column",marginTop:i?0:10,background:x.pro?"rgba(var(--acr),.2)":"rgba(239,68,68,.14)"}},h("b",null,x.who+(x.pro?" (for)":" (against)")),h("span",null,x.text))),
   log.length===6&&!vote&&h("div",null,h("div",{className:"lab"},"You are the judge: who argued better?"),h("div",{className:"opts"},h("button",{className:"opt",onClick:()=>judge("pro")},"Nix Pro"),h("button",{className:"opt red",onClick:()=>judge("con")},"Nix Con"))),
   vote&&busy&&h("div",{style:{color:"var(--sub)",fontSize:13,marginTop:10}},"AI judge is scoring…"),
+  // if the judge failed, let the user try again
+  vote&&!busy&&!res&&err&&h("button",{className:"btn",onClick:()=>judge(vote)},"Retry judge"),
   res&&h("div",{className:"card",style:{marginTop:10,fontSize:13,lineHeight:1.6}},h("b",null,"Scores"),h("br"),"Nix Pro: "+res.pro+"/10  ·  Nix Con: "+res.con+"/10",h("br"),"AI verdict: "+nm(res.winner),h("br"),h("i",null,res.why),h("br"),vote===res.winner?"You and the AI judge agree.":"You picked "+nm(vote)+", the AI judge disagrees."));
 }
 
