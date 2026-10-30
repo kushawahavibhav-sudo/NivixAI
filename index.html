@@ -450,6 +450,7 @@ const ls=(k,d)=>{try{return localStorage.getItem("nivixai_"+k)||d}catch(e){retur
 const sv=(k,v)=>{try{localStorage.setItem("nivixai_"+k,v);return true}catch(e){return false}};
 const lj=(k,d)=>{try{const v=JSON.parse(ls(k,""));return v==null?d:v}catch(e){return d}};
 
+const getHashRoom=()=>{try{const m=location.hash.match(/room=([\w-]+)/);return m?m[1]:null}catch(e){return null}};
 const rid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const errMsg=d=>typeof(d&&d.error)==="string"?d.error:(d&&d.error&&d.error.message)||(d&&d.message)||"";
@@ -585,7 +586,7 @@ function Msg({m,onRetry,onEdit,onExplain}){
  return h("div",{className:"msg "+(u?"u":"a")},
   h("div",{className:"bub"+(u?"":" md")},
    m.image&&h("img",{src:m.image,alt:"Generated image"}),m.image&&h("a",{href:m.image,download:"nivixai-image.png"},"⬇ Download"),
-   u?[m.file&&h("div",{className:"fchip",key:"f"},"📎 "+m.file),m.text]
+   u?[m.authorName&&h("div",{style:{fontSize:11,fontWeight:600,color:"var(--ac)",marginBottom:3,opacity:.9},key:"auth"},m.authorName),m.file&&h("div",{className:"fchip",key:"f"},"📎 "+m.file),m.text]
     :(m.text?h("div",{className:"mdc",dangerouslySetInnerHTML:{__html:html},onClick:onMd}):null)),
   h("div",{className:"acts"},
    h("button",{onClick:()=>copyText(m.text||"").then(()=>{setC(true);setTimeout(()=>setC(false),1400)}).catch(()=>{})},Ic("copy",13),c?"Copied":"Copy"),
@@ -621,10 +622,11 @@ function Dialog({d,onClose}){
 
 
 
-// Share & Live Collaboration Modal (Fixed and interactive)
-function ShareModal({room,msgs,loggedIn,onStartRoom,onLeaveRoom,onSignIn,onClose,notify}){
+// Share & Live Collaboration Modal (Multi-tab, multi-device, instant sync)
+function ShareModal({room,msgs,loggedIn,onStartRoom,onJoinRoom,onLeaveRoom,onSignIn,onClose,notify}){
  const[copiedLink,setCopiedLink]=useState(false);
  const[copiedChat,setCopiedChat]=useState(false);
+ const[joinInput,setJoinInput]=useState("");
  const currentUrl=useMemo(()=>{
   if(!room)return"";
   try{return location.origin+(location.pathname==="/"?"":location.pathname)+"#room="+room}catch(e){return "#room="+room}
@@ -639,7 +641,7 @@ function ShareModal({room,msgs,loggedIn,onStartRoom,onLeaveRoom,onSignIn,onClose
 
  const copyTranscript=()=>{
   if(!msgs.length)return notify("No messages in chat to copy.");
-  const tx=msgs.filter(m=>!m.err).map(m=>`[${m.sender==="user"?"User":"NivixAI"}]: ${m.text}`).join("\n\n");
+  const tx=msgs.filter(m=>!m.err).map(m=>`[${m.authorName||(m.sender==="user"?"User":"NivixAI")}]: ${m.text}`).join("\n\n");
   copyText(tx).then(()=>{
    setCopiedChat(true);notify("Transcript copied to clipboard!");setTimeout(()=>setCopiedChat(false),2200);
   }).catch(()=>notify("Failed to copy transcript."));
@@ -647,39 +649,45 @@ function ShareModal({room,msgs,loggedIn,onStartRoom,onLeaveRoom,onSignIn,onClose
 
  const exportMarkdown=()=>{
   if(!msgs.length)return notify("No messages in chat to export.");
-  const blob=new Blob(["# NivixAI Chat Export\n\n"+msgs.filter(m=>!m.err).map(m=>`**${m.sender==="user"?"You":"NivixAI"}:** ${m.text}`).join("\n\n")+"\n"],{type:"text/markdown;charset=utf-8"});
+  const blob=new Blob(["# NivixAI Chat Export\n\n"+msgs.filter(m=>!m.err).map(m=>`**${m.authorName||(m.sender==="user"?"You":"NivixAI")}:** ${m.text}`).join("\n\n")+"\n"],{type:"text/markdown;charset=utf-8"});
   const u=URL.createObjectURL(blob);const a=document.createElement("a");
   a.href=u;a.download=`nivixai-chat-${new Date().toISOString().slice(0,10)}.md`;a.click();
   setTimeout(()=>URL.revokeObjectURL(u),2000);notify("Exported as Markdown.");
  };
 
- const shareNative=()=>{
-  if(navigator.share){
-   navigator.share({title:"NivixAI Live Chat",text:room?"Join my live NivixAI room:":"Chat with NivixAI:",url:currentUrl||location.href}).catch(()=>{});
-  }else copyLiveLink();
+ const doJoin=()=>{
+  const val=joinInput.trim();
+  if(!val)return;
+  const match=val.match(/room=([\w-]+)/)||val.match(/([\w-]+)/);
+  if(match&&match[1]){
+   onJoinRoom(match[1]);
+   onClose();
+  }else notify("Invalid room ID or URL.");
  };
 
- return h(Modal,{title:"Share & Live Chat",onClose},
+ return h(Modal,{title:"Share & Live Collaboration",onClose},
   room ? h("div",null,
    h("div",{className:"card",style:{padding:14,marginBottom:14,border:"1px solid rgba(var(--acr),.4)"}},
     h("div",{style:{display:"flex",alignItems:"center",gap:8,fontSize:14,fontWeight:600,color:"#34d399",marginBottom:6}},
      h("span",{className:"dot"}),"Live Room Active"),
-    h("div",{style:{fontSize:12,color:"var(--sub)",marginBottom:12,lineHeight:1.4}},"Room ID: ",h("code",{style:{color:"var(--tx)"}},room),h("br"),"Messages sync in real-time with anyone using this link."),
+    h("div",{style:{fontSize:12,color:"var(--sub)",marginBottom:12,lineHeight:1.4}},
+     "Room ID: ",h("code",{style:{color:"var(--tx)"}},room),h("br"),
+     "Real-time sync active across open tabs, windows & devices."),
     h("div",{style:{display:"flex",gap:8}},
      h("input",{className:"fld",readOnly:true,value:currentUrl,style:{fontSize:12}}),
-     h("button",{className:"opt on",style:{flex:"0 0 auto",padding:"8px 14px"},onClick:copyLiveLink},copiedLink?"✓ Copied":"Copy")),
-    navigator.share&&h("button",{className:"btn",style:{marginTop:10},onClick:shareNative},"Share via System Menu…")),
+     h("button",{className:"opt on",style:{flex:"0 0 auto",padding:"8px 14px"},onClick:copyLiveLink},copiedLink?"✓ Copied":"Copy Link"))),
    h("button",{className:"btn red",onClick:()=>{onLeaveRoom();onClose()}},"Leave Live Room"))
   : h("div",null,
    h("div",{className:"card",style:{padding:14,marginBottom:14}},
-    h("div",{style:{fontSize:14,fontWeight:600,marginBottom:6}},"Start a Live Real-Time Room"),
+    h("div",{style:{fontSize:14,fontWeight:600,marginBottom:6}},"Start a Real-Time Live Room"),
     h("div",{style:{fontSize:12,color:"var(--sub)",lineHeight:1.5,marginBottom:12}},
-     loggedIn ? "Create an instant live sync room to collaborate with others. Messages sync in real-time across devices via Firestore."
-     : "Live synchronization requires signing in with Google or GitHub so messages sync across devices in real time."),
-    loggedIn ? h("button",{className:"btn",onClick:()=>onStartRoom()},Ic("chat",16)," Create Live Room Now")
-    : h("div",{style:{display:"flex",flexDirection:"column",gap:8}},
-       h("button",{className:"btn",onClick:()=>{onClose();onSignIn()}},"Sign in to Host Live Room"),
-       h("button",{className:"opt",style:{textAlign:"center"},onClick:()=>onStartRoom(true)},"Start Instant Local Room"))),
+     "Create a real-time room for you and your friends. Messages sync instantly across tabs, windows, and devices."),
+    h("button",{className:"btn",onClick:()=>onStartRoom()},Ic("chat",16)," Create Live Room Now")),
+   h("div",{className:"card",style:{padding:14,marginBottom:14}},
+    h("div",{style:{fontSize:14,fontWeight:600,marginBottom:8}},"Join Existing Room"),
+    h("div",{style:{display:"flex",gap:8}},
+     h("input",{className:"fld",placeholder:"Paste Room ID or full URL...",value:joinInput,onChange:e=>setJoinInput(e.target.value),onKeyDown:e=>{if(e.key==="Enter")doJoin()}}),
+     h("button",{className:"opt on",style:{flex:"0 0 auto",padding:"8px 14px"},onClick:doJoin},"Join"))),
    h("div",{className:"lab"},"SHARE CHAT TRANSCRIPT"),
    h("div",{className:"opts"},
     h("button",{className:"opt",onClick:copyTranscript},copiedChat?"✓ Copied!":"Copy Text"),
@@ -875,7 +883,7 @@ function App(){
  useEffect(()=>{const k=e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setModal(m=>m==="cmd"?null:"cmd")}};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[]);
  const[input,setInput]=useState(""),[file,setFile]=useState(null),[msgs,setMsgs]=useState([]),[chats,setChats]=useState([]),[activeId,setActiveId]=useState(null),[thinking,setThinking]=useState(false),[rec,setRec]=useState(false);
  const[modeMenu,setModeMenu]=useState(false),[navOpen,setNavOpen]=useState(false),[modal,setModal]=useState(null),[dlg,setDlg]=useState(null),[toast,setToast]=useState(""),[ncAnim,setNcAnim]=useState(false),[chatKey,setChatKey]=useState(0),[,setTick]=useState(0);
- const[room,setRoom]=useState(null),CID=useRef(rid()).current; // CID: stable per-tab client id so we ignore our own live-room writes
+ const[room,setRoom]=useState(()=>getHashRoom()),CID=useRef(rid()).current; // CID: stable per-tab client id so we ignore our own live-room writes
  const[theme,setTheme]=useState(()=>ls("theme","dark")),[customBg,setCustomBg]=useState(()=>ls("customBgUrl","")),[bgMode,setBgMode]=useState(()=>{const m=ls("bgMode","none");return m==="custom"&&!ls("customBgUrl","")?"none":m});
  const[usage,setUsage]=useState(()=>{try{const u=JSON.parse(ls("usage","{}"));return{...U0,...u,models:u.models||{},days:u.days||[]}}catch(e){return U0}});
  const[voices,setVoices]=useState([]),[voiceName,setVoiceName]=useState(()=>ls("voice","")),[voiceMode,setVoiceMode]=useState(()=>ls("voiceMode","0")==="1");
@@ -884,10 +892,19 @@ function App(){
  const hacker=theme==="hacker",hasBg=bgMode==="custom"&&!!customBg&&!hacker,fxKind=hacker?"matrix":bgMode==="rain"?"rain":null,fx=hasBg||!!fxKind,modelLabel=(MODELS.find(m=>m[0]===model)||[0,model])[1],hr=new Date().getHours(),greet=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
  const chatTime=c=>c.id===activeId?"Just now":ago(c.updated||c.id);
  const notify=t=>{setToast(t);clearTimeout(toastT.current);toastT.current=setTimeout(()=>setToast(""),3200)};
- const bump=()=>{sess.current++;setThinking(false);setRoom(null)};
+ const bump=()=>{sess.current++;setThinking(false);};
  const ask=d=>setDlg(d);
 
  useFx(fxKind,fxRef);
+ useEffect(()=>{
+  const onHash=()=>{
+   const r=getHashRoom();
+   if(r!==room){setRoom(r);if(r)notify("Connected to live room: "+r)}
+  };
+  window.addEventListener("hashchange",onHash);
+  return()=>window.removeEventListener("hashchange",onHash);
+ },[room]);
+
  useEffect(()=>{const t=setInterval(()=>setTick(x=>x+1),30000);return()=>clearInterval(t)},[]);
  useEffect(()=>{document.documentElement.dataset.theme=theme;sv("theme",theme)},[theme]);
  useEffect(()=>{sv("bgMode",bgMode)},[bgMode]);
@@ -913,27 +930,129 @@ function App(){
  useEffect(()=>{if(window.__signIn)return setReady(true);const f=()=>setReady(true);addEventListener("firebase-ready",f);return()=>removeEventListener("firebase-ready",f)},[]);
  // debounced cloud save (only chats that changed are written)
  useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length||!window.__saveChats)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),1500);return()=>clearTimeout(t)},[chats,loggedIn]);
- useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{bump();setActiveId(null);setMsgs([]);
-  if(user){const n=user.displayName||"Google User";setRealName(n);if(!ls("nick",""))setNick(n.split(" ")[0]);setEmail(user.email||"");setPhoto(user.photoURL);setLoggedIn(true);uidRef.current=user.uid;setChats([]);{const rm=location.hash.match(/room=([\w-]+)/);if(rm){setRoom(rm[1]);notify("Joined a live chat.")}}
-   window.__loadChats(user.uid).then(c=>{if(uidRef.current===user.uid)setChats(c)}).catch(e=>{console.error(e);notify("Couldn't load your saved chats.")})}
-  else{if(/room=/.test(location.hash)){setModal("acct");notify("Sign in to join the live chat.")}uidRef.current=null;setRealName("Guest User");setEmail("");setPhoto(null);setLoggedIn(false);setChats([])}})},[ready]);
+  useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{
+  const rm=getHashRoom();
+  setActiveId(null);
+  if(user){
+   const n=user.displayName||"Google User";
+   setRealName(n);
+   if(!ls("nick",""))setNick(n.split(" ")[0]);
+   setEmail(user.email||"");
+   setPhoto(user.photoURL);
+   setLoggedIn(true);
+   uidRef.current=user.uid;
+   if(rm){
+    setRoom(rm);
+    notify("Connected to live room: "+rm);
+   }else{
+    window.__loadChats(user.uid).then(c=>{if(uidRef.current===user.uid)setChats(c)}).catch(e=>console.error(e));
+   }
+  }else{
+   uidRef.current=null;
+   setRealName("Guest User");
+   setEmail("");
+   setPhoto(null);
+   setLoggedIn(false);
+   if(rm){
+    setRoom(rm);
+    notify("Joined live room: "+rm);
+   }
+  }
+ })},[ready]);
  useEffect(()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;const r=new SR();r.continuous=false;r.interimResults=false;r.lang="en-US";
   r.onresult=e=>setInput(p=>p?p+" "+e.results[0][0].transcript:e.results[0][0].transcript);r.onend=r.onerror=()=>setRec(false);recRef.current=r},[]);
  useEffect(()=>{const c=e=>{if(modeMenu&&popRef.current&&!popRef.current.contains(e.target))setModeMenu(false)};document.addEventListener("mousedown",c);return()=>document.removeEventListener("mousedown",c)},[modeMenu]);
  useEffect(()=>{const k=e=>{if(e.key!=="Escape")return;if(dlg)setDlg(null);else setModal(null)};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[dlg]);
 
- thRef.current=thinking;
- useEffect(()=>{if(!room||!window.__watchRoom)return;return window.__watchRoom(room,d=>{if(d.error)return notify("Live sync failed: "+d.error);if(d.by===CID||thRef.current||!Array.isArray(d.messages))return;setMsgs(d.messages);setActiveId(null)})},[room]);
- const syncRoom=arr=>{if(room&&window.__pushRoom)window.__pushRoom(room,arr,CID).catch(e=>console.error(e))};
-  const handleStartRoom=async(guestMode=false)=>{
-  const id=rid().replace(/-/g,"").slice(0,16);
-  if(loggedIn&&window.__pushRoom&&!guestMode){
-   try{await window.__pushRoom(id,msgs,CID)}catch(e){console.warn("Push room error:",e)}
+  thRef.current=thinking;
+ useEffect(()=>{
+  if(!room)return;
+  let bc=null;
+  try{
+   bc=new BroadcastChannel("nivixai_live_room_"+room);
+   bc.onmessage=e=>{
+    const d=e.data;
+    if(!d||d.by===CID)return;
+    if(Array.isArray(d.messages)){
+     setMsgs(d.messages);
+     setActiveId(null);
+    }
+   };
+  }catch(e){}
+
+  const onStorage=e=>{
+   if(e.key==="nivixai_live_room_"+room&&e.newValue){
+    try{
+     const d=JSON.parse(e.newValue);
+     if(d&&d.by!==CID&&Array.isArray(d.messages)){
+      setMsgs(d.messages);
+      setActiveId(null);
+     }
+    }catch(err){}
+   }
+  };
+  window.addEventListener("storage",onStorage);
+
+  try{
+   const cached=JSON.parse(localStorage.getItem("nivixai_live_room_"+room)||"null");
+   if(cached&&Array.isArray(cached.messages)&&cached.messages.length>0){
+    setMsgs(cached.messages);
+   }
+  }catch(e){}
+
+  let unsubFirestore=null;
+  if(window.__watchRoom){
+   try{
+    unsubFirestore=window.__watchRoom(room,d=>{
+     if(!d||d.by===CID||!Array.isArray(d.messages))return;
+     setMsgs(d.messages);
+     setActiveId(null);
+    });
+   }catch(e){console.warn("Firestore listener:",e)}
   }
+
+  return()=>{
+   if(bc)bc.close();
+   window.removeEventListener("storage",onStorage);
+   if(unsubFirestore)unsubFirestore();
+  };
+ },[room]);
+
+ const syncRoom=arr=>{
+  if(!room)return;
+  try{
+   const bc=new BroadcastChannel("nivixai_live_room_"+room);
+   bc.postMessage({by:CID,messages:arr,senderName:nick||realName||"User",t:Date.now()});
+   bc.close();
+  }catch(e){}
+  try{
+   localStorage.setItem("nivixai_live_room_"+room,JSON.stringify({by:CID,messages:arr,senderName:nick||realName||"User",t:Date.now()}));
+  }catch(e){}
+  if(window.__pushRoom){
+   window.__pushRoom(room,arr,CID).catch(e=>console.warn("Firestore push notice:",e.message));
+  }
+ };
+
+  const handleJoinRoom=rId=>{
+  setRoom(rId);
+  try{if(history.replaceState)history.replaceState(null,"",location.pathname+location.search+"#room="+rId);else location.hash="room="+rId}catch(e){}
+  notify("Joined live room: "+rId);
+ };
+ const handleStartRoom=async(guestMode=false)=>{
+  const id=rid().replace(/-/g,"").slice(0,16);
   setRoom(id);
   try{if(history.replaceState)history.replaceState(null,"",location.pathname+location.search+"#room="+id);else location.hash="room="+id}catch(e){}
+  try{
+   localStorage.setItem("nivixai_live_room_"+id,JSON.stringify({by:CID,messages:msgs,senderName:nick||realName||"User",t:Date.now()}));
+   const bc=new BroadcastChannel("nivixai_live_room_"+id);
+   bc.postMessage({by:CID,messages:msgs,senderName:nick||realName||"User",t:Date.now()});
+   bc.close();
+  }catch(e){}
+  if(window.__pushRoom){
+   window.__pushRoom(id,msgs,CID).catch(e=>console.warn("Push room error:",e));
+  }
   const fullUrl=location.origin+(location.pathname==="/"?"":location.pathname)+"#room="+id;
-  copyText(fullUrl).then(()=>notify("Live room link copied!")).catch(()=>notify("Live room active."));
+  copyText(fullUrl).then(()=>notify("Live room link copied!")).catch(()=>notify("Live room active: "+id));
  };
 
  const handleLeaveRoom=()=>{
@@ -1041,9 +1160,9 @@ function App(){
   }finally{if(live())setThinking(false)}};
 
  const clean=()=>msgs.filter(x=>!x.err);
- const send=async()=>{if(thinking)return;const txt=input.trim();if(!txt&&!file)return;
-  const m={id:rid(),sender:"user",text:txt||"Please read this file and summarize it.",...(file?{file:file.name,ctx:file.text}:{})},hist=[...clean(),m];
-  setMsgs(hist);setInput("");setFile(null);await api(hist)};
+  const send=async()=>{if(thinking)return;const txt=input.trim();if(!txt&&!file)return;
+  const m={id:rid(),sender:"user",authorName:nick||realName||"User",text:txt||"Please read this file and summarize it.",...(file?{file:file.name,ctx:file.text}:{})},hist=[...clean(),m];
+  setMsgs(hist);setInput("");setFile(null);syncRoom(hist);await api(hist)};
  const busy=()=>{if(thinking){notify("Wait for the current reply, or press Stop.");return true}return false};
  const retry=async m=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i<1)return;const tr=msgs.slice(0,i).filter(x=>!x.err);if(!tr.length||tr[tr.length-1].sender!=="user")return;setMsgs(tr);await api(tr)};
  const edit=async(m,t)=>{if(busy())return;const i=msgs.findIndex(x=>x.id===m.id);if(i===-1)return;const tr=[...msgs.slice(0,i).filter(x=>!x.err),{...m,text:t,prompt:undefined}];setMsgs(tr);await api(tr)};
@@ -1086,6 +1205,11 @@ function App(){
    h("div",{className:"side"+(navOpen?" open":"")},h("nav",{className:"nav","aria-label":"Main"},nav("home","Home",newChat,true),nav("lock","Memory Vault",()=>setModal("mem")),nav("plus","New Chat",newChat),nav("brain","Debate Arena",()=>setModal("debate")),(room?nav("x","Leave live chat",handleLeaveRoom):nav("chat","Share live chat",()=>setModal("share")))),
     h("div",{className:"promo"},h("div",{className:"promoart",dangerouslySetInnerHTML:{__html:PROMO_SVG}}),h("span",null,"✦ Better questions.",h("br"),"Bigger possibilities."))),
    h("div",{className:"center"},
+    (room?h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 18px",background:"rgba(34,229,143,.08)",borderBottom:"1px solid rgba(34,229,143,.2)",fontSize:12,color:"#34d399",flexShrink:0}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:7}},h("span",{className:"dot"}),"Live Room: ",h("b",{style:{color:"var(--tx)"}},room)," (Real-time sync active)"),
+      h("div",{style:{display:"flex",gap:8}},
+       h("button",{style:{color:"var(--tx)",fontSize:11,padding:"3px 8px",borderRadius:6,border:"1px solid var(--line)",background:"rgba(255,255,255,.06)"},onClick:()=>copyText(location.origin+(location.pathname==="/"?"":location.pathname)+"#room="+room).then(()=>notify("Room link copied!"))},"Copy Link"),
+       h("button",{style:{color:"#fca5a5",fontSize:11,padding:"3px 8px",borderRadius:6,border:"1px solid rgba(239,68,68,.3)"},onClick:handleLeaveRoom},"Leave"))):null),
     h("div",{className:"scroll"+(empty?" home":"")},empty?h("div",{className:"hero enter",key:"hero"+chatKey},h("div",null,h("h1",null,temp?"◉ Temporary chat":`${greet}${nick?", "+nick:""} ✦`),h("p",null,temp?"Nothing here will be saved.":"What would you like to do today?")),
       !temp&&h("div",{className:"modes"},cards.map(c=>h("button",{key:c.k,className:"mc"+(c.on?" on":""),onClick:c.go},h("span",null,Ic(c.icon,18)),h("b",null,c.label),h("small",null,c.desc)))))
      :h("div",{className:"msgs","aria-live":"polite"},msgs.map(m=>h(Msg,{key:m.id,m,onRetry:retry,onEdit:askEdit,onExplain:explain})),waiting&&h("div",{className:"msg a","aria-label":"NivixAI is typing"},h("div",{className:"bub"},h("span",{className:"td"}),h("span",{className:"td"}),h("span",{className:"td"}))),h("div",{ref:endRef}))),
@@ -1110,7 +1234,7 @@ function App(){
     h("div",{className:"quote"},"✦ “Small steps",h("br"),"build big things.”",h("div",{style:{color:"var(--nt)",fontSize:12,marginTop:6}},"— "+BRAND)))),
 
   modal==="cmd"&&h(Palette,{items:cmds,onClose:()=>setModal(null)}),
- modal==="share"&&h(ShareModal,{room,msgs,loggedIn,onStartRoom:handleStartRoom,onLeaveRoom:handleLeaveRoom,onSignIn:()=>setModal("acct"),onClose:()=>setModal(null),notify}),
+ modal==="share"&&h(ShareModal,{room,msgs,loggedIn,onStartRoom:()=>handleStartRoom(false),onJoinRoom:r=>handleJoinRoom(r),onLeaveRoom:handleLeaveRoom,onSignIn:()=>setModal("acct"),onClose:()=>setModal(null),notify}),
   modal==="hist"&&h(Modal,{title:"Saved Chats",onClose:()=>{setModal(null);setHistoryQuery("")}},
    h("input",{className:"fld",type:"search",value:historyQuery,"aria-label":"Search chats",placeholder:"Search chat titles…",onChange:e=>setHistoryQuery(e.target.value),style:{marginBottom:12}}),
    visibleChats.length?visibleChats.map(c=>h("div",{key:c.id,className:"hrow"},
