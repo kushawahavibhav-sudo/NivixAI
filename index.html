@@ -30,22 +30,52 @@ W.__onAuth=cb=>onAuthStateChanged(auth,cb);
 W.__token=async()=>auth.currentUser?auth.currentUser.getIdToken():null;
 
 // ---- chat sync ----
-const seen={},MAX_DOC=800000; // Firestore docs are capped at 1 MB
-const keyOf=(uid,c)=>uid+":"+c.id+":"+(c.updated||0)+":"+c.messages.length;
-const fit=m=>{let r=m;while(r.length>2&&JSON.stringify(r).length>MAX_DOC)r=r.slice(1);return r};
-W.__saveChats=async(uid,chats)=>{
- for(const c of chats){const k=keyOf(uid,c);if(seen[k])continue;
-  try{
-   const messages=fit(c.messages.filter(m=>!m.err).map(m=>m.image&&String(m.image).startsWith("data:")?{...m,image:null}:m));
-   await setDoc(doc(db,"users",uid,"chats",String(c.id)),JSON.parse(JSON.stringify({...c,messages})));
-   seen[k]=1;
-  }catch(e){console.error("Save failed",c.id,e)}}};
-W.__loadChats=async uid=>{
- const snap=await getDocs(collection(db,"users",uid,"chats"));
- const out=snap.docs.map(d=>d.data()).filter(c=>c&&c.id&&Array.isArray(c.messages));
- out.forEach(c=>{seen[keyOf(uid,c)]=1}); // already in the cloud, don't write them back
- return out.sort((a,b)=>(b.updated||b.id)-(a.updated||a.id))};
-W.__deleteChat=async(uid,id)=>{await deleteDoc(doc(db,"users",uid,"chats",String(id)))};
+const seen = {};
+const MAX_DOC = 800000;
+const sanitize = (val) => JSON.parse(JSON.stringify(val));
+const keyOf = (uid, c) => uid + ":" + String(c.id) + ":" + (c.updated || 0) + ":" + (c.messages ? c.messages.length : 0);
+const fit = m => { let r = m; while (r.length > 2 && JSON.stringify(r).length > MAX_DOC) r = r.slice(1); return r; };
+
+W.__saveChats = async (uid, chats) => {
+  if (!uid || !Array.isArray(chats)) return;
+  for (const c of chats) {
+    if (!c || !c.id) continue;
+    const chatId = String(c.id);
+    const k = keyOf(uid, c);
+    if (seen[k]) continue;
+    try {
+      const messages = fit((c.messages || []).filter(m => !m.err).map(m => m.image && String(m.image).startsWith("data:") ? { ...m, image: null } : m));
+      await setDoc(doc(db, "users", uid, "chats", chatId), sanitize({
+        id: chatId,
+        title: c.title || "New chat",
+        messages: messages,
+        updated: c.updated || Date.now()
+      }));
+      seen[k] = 1;
+      console.log("Chat saved successfully:", chatId);
+    } catch (e) {
+      console.error("Save failed for chat:", chatId, e);
+    }
+  }
+};
+
+W.__loadChats = async (uid) => {
+  if (!uid) return [];
+  try {
+    const snap = await getDocs(collection(db, "users", uid, "chats"));
+    const out = snap.docs.map(d => d.data()).filter(c => c && c.id && Array.isArray(c.messages));
+    out.forEach(c => { seen[keyOf(uid, c)] = 1; });
+    return out.sort((a, b) => (b.updated || b.id) - (a.updated || a.id));
+  } catch (e) {
+    console.error("Load failed:", e);
+    return [];
+  }
+};
+
+W.__deleteChat = async (uid, id) => {
+  if (!uid || !id) return;
+  await deleteDoc(doc(db, "users", uid, "chats", String(id)));
+};
 // ---- live collaboration rooms (Firestore: rooms/{id}) ----
 W.__pushRoom=(id,messages,by)=>setDoc(doc(db,"rooms",id),JSON.parse(JSON.stringify({messages:fit(messages.filter(m=>!m.err).map(m=>m.image&&String(m.image).startsWith("data:")?{...m,image:null}:m)),by,updated:Date.now()})));
 W.__watchRoom=(id,cb)=>onSnapshot(doc(db,"rooms",id),s=>{if(s.exists())cb(s.data())},e=>cb({error:e.message}));
@@ -929,8 +959,8 @@ function App(){
  useEffect(()=>{window.__voice=voiceName;sv("voice",voiceName);sv("voiceMode",voiceMode?"1":"0")},[voiceName,voiceMode]);
  useEffect(()=>{if(window.__signIn)return setReady(true);const f=()=>setReady(true);addEventListener("firebase-ready",f);return()=>removeEventListener("firebase-ready",f)},[]);
  // debounced cloud save (only chats that changed are written)
- useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length||!window.__saveChats)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),1500);return()=>clearTimeout(t)},[chats,loggedIn]);
-  useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{
+useEffect(()=>{const uid=uidRef.current;if(!loggedIn||!uid||!chats.length||!window.__saveChats)return;const t=setTimeout(()=>window.__saveChats(uid,chats).catch(console.error),500);return()=>clearTimeout(t)},[chats,loggedIn]);
+ useEffect(()=>{if(!ready||!window.__onAuth)return;return window.__onAuth(user=>{
   const rm=getHashRoom();
   setActiveId(null);
   if(user){
